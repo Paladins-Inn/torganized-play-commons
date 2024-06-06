@@ -12,6 +12,8 @@ TBD
 
 The license for the software is LGPL 3.0 or newer.
 
+The UI is an adoption of the [Start Bootstrap](https://github.com/StartBootstrap/startbootstrap-sb-admin) theme which is MIT licensed.
+
 ## Architecture
 
 tl;dr (ok, only the bullshit bingo words):
