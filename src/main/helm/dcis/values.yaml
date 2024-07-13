@@ -13,13 +13,16 @@ microservice:
     repository: quay.io/paladinsinn/dcis/dcis-commons
     pullPolicy: Always
     tag: *version
+  autoscaling:
+    enabled: true
+    maxReplicas: 10
   resources:
     requests:
-      cpu: 50m
-      memory: 96Mi
+      cpu: 10m
+      memory: 16Mi
     limits:
-      cpu: 50m
-      memory: 96Mi
+      cpu: 20m
+      memory: 32Mi
   sso:
     enabled: false  
   postgrescluster:
@@ -27,8 +30,21 @@ microservice:
   metrics:
     enabled: false
   probes:
-    enabled: false
+    enabled: true
     default: false
+    startup:
+      httpGet:
+        path: /index.html
+        port: http
+    liveness:
+      httpGet:
+        path: /index.html
+        port: http
+    readiness:
+      httpGet:
+        path: /index.html
+        port: http
+
 
 services:
 - service: dcis-commons
