@@ -1,0 +1,60 @@
+# Default values for dcis.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: dcis
+partOf: torganized-play
+
+microservice:
+  nameOverride: commons
+  partOf: torganized-play
+  version: &version 1.0.0-SNAPSHOT
+  image:
+    repository: quay.io/paladinsinn/dcis/dcis-commons
+    pullPolicy: Always
+    tag: *version
+  sso:
+    enabled: false  
+  postgrescluster:
+    enabled: false
+  metrics:
+    enabled: false
+  probes:
+    enabled: false
+
+services:
+- service: dcis-commons
+  path: /commons
+- service: dcis-players
+  path: /players
+- service: dcis-stormknights
+  path: /stormknights
+- service: dcis-gaming
+  path: /gaming
+- service: dcis-threads
+  path: /threads
+
+ingress:
+  enabled: true
+  className: "openshift-default"
+  annotations:
+    certmanager.io-private-key-rotation-policy: Always
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/revision-history-limit: '2'
+    cert-manager.io/subject-countries: de
+    cert-manager.io/subject-provinces: Hessen
+    cert-manager.io/postalcodes: '64625'
+    cert-manager.io/localities: Bensheim
+    cert-manager.io/subject-organizations: Kaiserpfalz EDV-Service
+    cert-manager.io/subject-organizationalunits: Paladins Inn,Torganisiertes Spiel
+    cert-manager.io/usages: server auth
+    cert-manager.io/private-key-algorithm: RSA
+    cert-manager.io/private-key-size: '4096'
+    cert-manager.io/duration: 2184h
+    cert-manager.io/renew-before: 1848h
+  hosts:
+  - dcis.torganized-play.org
+  - storm-knights.org
+  - www.storm-knights.org
+  - storm-knights.de
+  - www.storm-knights.de

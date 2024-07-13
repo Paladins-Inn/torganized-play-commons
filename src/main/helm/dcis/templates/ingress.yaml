@@ -1,0 +1,45 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "dcis.fullname" . -}}
+{{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
+  {{- end }}
+{{- end }}
+---
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "dcis.labels" . | nindent 4 }}
+  annotations:
+  {{- with (first .Values.ingress.hosts) }}
+    cert-manager.io/common-name: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  tls:
+  - hosts:
+    {{- range $.Values.ingress.hosts }}
+    - {{ . | quote }}
+    {{- end }}
+    secretName: {{ $fullName }}-tls
+  rules:
+    {{- range $.Values.ingress.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          {{- range $.Values.services }}
+          - path: {{ .path }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ .service }}
+                port:
+                  name: http
+          {{- end }}
+    {{- end }}
+{{- end }}
