@@ -13,6 +13,13 @@ microservice:
     repository: quay.io/paladinsinn/dcis/dcis-commons
     pullPolicy: Always
     tag: *version
+  resources:
+    requests:
+      cpu: 50m
+      memory: 96Mi
+    limits:
+      cpu: 50m
+      memory: 96Mi
   sso:
     enabled: false  
   postgrescluster:
@@ -21,8 +28,11 @@ microservice:
     enabled: false
   probes:
     enabled: false
+    default: false
 
 services:
+- service: dcis-commons
+  path: /
 - service: dcis-commons
   path: /commons
 - service: dcis-players
