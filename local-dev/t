@@ -1,0 +1,21 @@
+I use OIDC for authentication with spring-boot 3.3.1 and spring security 6. It works when running the java app directly (via mvn spring-boot:run) but fails when ruinning in a container (neither podman-compose nor a kubernetes cluster (OKD) is working).
+
+when testing locally, the login works fine:
+
+2024-07-14 19:07:10.396 ...RestTemplate - HTTP POST https://.../realms/.../protocol/openid-connect/token
+2024-07-14 19:07:10.396 ...RestTemplate - Accept=[application/json, application/*+json]
+2024-07-14 19:07:10.397 ...RestTemplate - Writing [{grant_type=[authorization_code], code=[...], redirect_uri=[http://localhost:8000/players/login/oauth2/code/sso]}] as "application/x-www-form-urlencoded;charset=UTF-8"
+2024-07-14 19:07:10.492 ...RestTemplate - Response 200 OK
+
+But when running in a container (I paste the log from the podman-compose):
+
+2024-07-14 17:08:07.866 ...RestTemplate - HTTP POST https://.../realms/.../protocol/openid-connect/token
+2024-07-14 17:08:07.866 ...RestTemplate - Accept=[application/json, application/*+json]
+2024-07-14 17:08:07.866 ...RestTemplate - Writing [{grant_type=[authorization_code], code=[...], redirect_uri=[http://localhost:8080/players/login/oauth2/code/sso]}] as "application/x-www-form-urlencoded;charset=UTF-8"
+2024-07-14 17:08:07.951 ...RestTemplate - Response 401 UNAUTHORIZED
+
+Keycloak throws a CODE_TO_TOKEN_ERROR and does only show grant_type and error (invalid_client_credentials)
+
+Are there some experts out there, who have fought with this kind of problem? I think, the combination of spring-boot, spring security, keycloak and oidc is a quite common approach. The code is on github in https://github.com/Paladins-Inn/torganized-play-players/ and https://github.com/Paladins-Inn/torganized-play-commons/ (the local-dev directory contains the docker-compose.yaml).
+
+Any pointer or idea is heavily appreciated.

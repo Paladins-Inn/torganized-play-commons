@@ -1,15 +1,29 @@
+#
+# This is an insecure configuration!
+# It will open a docker container listening on port 80.
+# You will need to set "net.ipv4.ip_unprivileged_port_start=80" (at least port 80)
+# to make this work.
+#
 services:
   proxy:
     container_name: proxy
     image: docker.io/nginx:latest
     restart: on-failure
     ports:
-    - 80:8080
+    - 8080:8080
     volumes:
     - ./proxy.conf:/etc/nginx/conf.d/default.conf:ro
     - ./../src/main/html/commons/1.0.0/assets/img/favicon.ico:/etc/nginx/html/favicon.ico
     - ./../src/main/html/index.html:/etc/nginx/html/index.html
+    depends_on:
+      dcis-commons:
+        condition: service_healthy
+      dcis-players:
+        condition: service_healthy
 
+# ==============================================================================
+# DCIS - Commons
+# ------------------------------------------------------------------------------
   dcis-commons:
     profiles:
     - services
@@ -17,7 +31,12 @@ services:
     restart: always
     image: quay.io/paladinsinn/dcis/dcis-commons:1.0.0-SNAPSHOT
     ports:
-    - "8090:8080"
+    - 8090:8080
+    healthcheck:
+      test: curl --fail http://localhost:8080/index.html | exit 1
+      interval: 10s
+      retries: 5
+      timeout: 5s
 
 # ==============================================================================
 # DCIS - Players
@@ -34,6 +53,12 @@ services:
     ports:
     - 8081:8080
     - 8091:8081
+    healthcheck:
+      test: curl --user monitor:observing --fail http://localhost:8081/actuator/health/liveness | exit 1
+      start_period: 10s
+      interval: 10s
+      retries: 5
+      timeout: 5s
     environment:
       SPRING_PROFILES_ACTIVE: LOCAL
       PGO_pgbouncer-jdbc-uri: jdbc:postgresql://dcis-players-db:5432/postgres?user=postgres&password=postgres
@@ -41,11 +66,14 @@ services:
       PGO_password: postgres
       SSO_ISSUER: https://sso.kaiserpfalz-edv.de/realms/delphi-council
       SSO_CLIENT_ID: klenkes74
-      SSO_ROLE_ATTRIBUTE: roles
+      SSO_ROLE_ATTRIBUTE: groups
       SSO_USERNAME_ATTRIBUTE: preferred_username
       SSO_SCOPES: openid,profile,email,roles
     env_file: 
     - dev-dcis.env
+      # This file currently only contains a single line:
+      # SSO_CLIENT_SECRET: <oidc client secret for the provider>
+      # It is excluded via .gitignore from being checked into github.
     volumes:
     - ../../torganized-play-players/src/main/resources/application.yaml:/deployments/application.yaml:ro
     tmpfs:
@@ -65,6 +93,7 @@ services:
     - 5433:5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
+      start_period: 10s
       interval: 10s
       timeout: 5s
       retries: 5
