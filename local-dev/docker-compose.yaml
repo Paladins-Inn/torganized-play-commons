@@ -1,0 +1,85 @@
+services:
+  proxy:
+    container_name: proxy
+    image: docker.io/nginx:latest
+    restart: on-failure
+    ports:
+    - 80:8080
+    volumes:
+    - ./proxy.conf:/etc/nginx/conf.d/default.conf:ro
+    - ./../src/main/html/commons/1.0.0/assets/img/favicon.ico:/etc/nginx/html/favicon.ico
+    - ./../src/main/html/index.html:/etc/nginx/html/index.html
+
+  dcis-commons:
+    profiles:
+    - services
+    container_name: dcis-commons
+    restart: always
+    image: quay.io/paladinsinn/dcis/dcis-commons:1.0.0-SNAPSHOT
+    ports:
+    - "8090:8080"
+
+# ==============================================================================
+# DCIS - Players
+# ------------------------------------------------------------------------------
+  dcis-players:
+    profiles:
+    - dcis-players
+    - services
+    container_name: dcis-players
+    image: quay.io/paladinsinn/dcis/dcis-players:1.0.0-SNAPSHOT
+    depends_on:
+      dcis-players-db:
+        condition: service_healthy
+    ports:
+    - 8081:8080
+    - 8091:8081
+    environment:
+      SPRING_PROFILES_ACTIVE: LOCAL
+      PGO_pgbouncer-jdbc-uri: jdbc:postgresql://dcis-players-db:5432/postgres?user=postgres&password=postgres
+      PGO_user: postgres
+      PGO_password: postgres
+      SSO_ISSUER: https://sso.kaiserpfalz-edv.de/realms/delphi-council
+      SSO_CLIENT_ID: klenkes74
+      SSO_ROLE_ATTRIBUTE: roles
+      SSO_USERNAME_ATTRIBUTE: preferred_username
+      SSO_SCOPES: openid,profile,email,roles
+    env_file: 
+    - dev-dcis.env
+    volumes:
+    - ../../torganized-play-players/src/main/resources/application.yaml:/deployments/application.yaml:ro
+    tmpfs:
+    - /tmp
+    - /var/lib/run
+
+  dcis-players-db:
+    profiles:
+    - databases
+    container_name: dcis-players-db
+    image: docker.io/postgres:16.3-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+    - 5433:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes: 
+      - dev-players-db:/var/lib/postgresql/data:rw
+    tmpfs:
+    - /tmp
+    - /var/lib/run
+
+
+
+volumes:
+  dev-players-db:
+    driver: local
+  dev-gaming-db:
+    driver: local
+  dev-threads-db:
+    driver: local
