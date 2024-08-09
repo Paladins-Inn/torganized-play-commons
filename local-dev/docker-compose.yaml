@@ -32,11 +32,6 @@ services:
     image: quay.io/paladinsinn/dcis/dcis-commons:1.0.0-SNAPSHOT
     ports:
     - 8090:8080
-    healthcheck:
-      test: curl --fail http://localhost:8080/index.html | exit 1
-      interval: 10s
-      retries: 5
-      timeout: 5s
 
 # ==============================================================================
 # DCIS - Players
@@ -53,12 +48,6 @@ services:
     ports:
     - 8081:8080
     - 8091:8081
-    healthcheck:
-      test: curl --user monitor:observing --fail http://localhost:8081/actuator/health/liveness | exit 1
-      start_period: 10s
-      interval: 10s
-      retries: 5
-      timeout: 5s
     environment:
       SPRING_PROFILES_ACTIVE: LOCAL
       PGO_pgbouncer-jdbc-uri: jdbc:postgresql://dcis-players-db:5432/postgres?user=postgres&password=postgres
