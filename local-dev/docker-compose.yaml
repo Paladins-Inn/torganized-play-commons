@@ -93,6 +93,66 @@ services:
     - /var/lib/run
 
 
+# ==============================================================================
+# DCIS - Storm Knights
+# ------------------------------------------------------------------------------
+  dcis-stormknights:
+    profiles:
+    - dcis-stormknights
+    - services
+    container_name: dcis-stormknights
+    image: quay.io/paladinsinn/dcis/dcis-stormknights:1.0.0-SNAPSHOT
+    depends_on:
+      dcis-stormknights-db:
+        condition: service_healthy
+    ports:
+    - 8082:8080
+    - 8092:8081
+    environment:
+      SPRING_PROFILES_ACTIVE: LOCAL
+      PGO_pgbouncer-jdbc-uri: jdbc:postgresql://dcis-stormknights-db:5432/postgres?user=postgres&password=postgres
+      PGO_user: postgres
+      PGO_password: postgres
+      SSO_ISSUER: https://sso.kaiserpfalz-edv.de/realms/delphi-council
+      SSO_CLIENT_ID: klenkes74
+      SSO_ROLE_ATTRIBUTE: groups
+      SSO_USERNAME_ATTRIBUTE: preferred_username
+      SSO_SCOPES: openid,profile,email,roles
+    env_file: 
+    - dev-dcis.env
+      # This file currently only contains a single line:
+      # SSO_CLIENT_SECRET: <oidc client secret for the provider>
+      # It is excluded via .gitignore from being checked into github.
+    volumes:
+    - ../../torganized-play-storm-knights/src/main/resources/application.yaml:/deployments/application.yaml:ro
+    tmpfs:
+    - /tmp
+    - /var/lib/run
+
+  dcis-stormknights-db:
+    profiles:
+    - databases
+    container_name: dcis-stormknights-db
+    image: docker.io/postgres:16.3-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+    - 5434:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes: 
+      - dev-stormknights-db:/var/lib/postgresql/data:rw
+    tmpfs:
+    - /tmp
+    - /var/lib/run
+
+
 
 volumes:
   dev-players-db:
@@ -100,4 +160,6 @@ volumes:
   dev-gaming-db:
     driver: local
   dev-threads-db:
+    driver: local
+  dev-stormnights-db:
     driver: local
