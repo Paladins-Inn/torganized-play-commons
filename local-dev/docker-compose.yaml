@@ -20,6 +20,10 @@ services:
         condition: service_healthy
       dcis-players:
         condition: service_healthy
+      dcis-gaming:
+        condition: service_healthy
+      dcis-threats:
+        condition: service_healthy
 
 # ==============================================================================
 # DCIS - Commons
@@ -153,13 +157,131 @@ services:
     - /var/lib/run
 
 
+# ==============================================================================
+# DCIS - Threats Database
+# ------------------------------------------------------------------------------
+  dcis-threats:
+    profiles:
+    - dcis-threats
+    - services
+    container_name: dcis-threats
+    image: quay.io/paladinsinn/dcis/dcis-threats:1.0.0-SNAPSHOT
+    depends_on:
+      dcis-threats-db:
+        condition: service_healthy
+    ports:
+    - 8082:8080
+    - 8092:8081
+    environment:
+      SPRING_PROFILES_ACTIVE: LOCAL
+      PGO_pgbouncer-jdbc-uri: jdbc:postgresql://dcis-threats-db:5432/postgres?user=postgres&password=postgres
+      PGO_user: postgres
+      PGO_password: postgres
+      SSO_ISSUER: https://sso.kaiserpfalz-edv.de/realms/delphi-council
+      SSO_CLIENT_ID: klenkes74
+      SSO_ROLE_ATTRIBUTE: groups
+      SSO_USERNAME_ATTRIBUTE: preferred_username
+      SSO_SCOPES: openid,profile,email,roles
+    env_file: 
+    - dev-dcis.env
+      # This file currently only contains a single line:
+      # SSO_CLIENT_SECRET: <oidc client secret for the provider>
+      # It is excluded via .gitignore from being checked into github.
+    volumes:
+    - ../../torganized-play-storm-knights/src/main/resources/application.yaml:/deployments/application.yaml:ro
+    tmpfs:
+    - /tmp
+    - /var/lib/run
+
+  dcis-threats-db:
+    profiles:
+    - databases
+    container_name: dcis-threats-db
+    image: docker.io/postgres:16.3-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+    - 5434:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes: 
+      - dev-threats-db:/var/lib/postgresql/data:rw
+    tmpfs:
+    - /tmp
+    - /var/lib/run
+
+
+# ==============================================================================
+# DCIS - Threats Database
+# ------------------------------------------------------------------------------
+  dcis-gaming:
+    profiles:
+    - dcis-gaming
+    - services
+    container_name: dcis-gaming
+    image: quay.io/paladinsinn/dcis/dcis-gaming:1.0.0-SNAPSHOT
+    depends_on:
+      dcis-gaming-db:
+        condition: service_healthy
+    ports:
+    - 8082:8080
+    - 8092:8081
+    environment:
+      SPRING_PROFILES_ACTIVE: LOCAL
+      PGO_pgbouncer-jdbc-uri: jdbc:postgresql://dcis-gaming-db:5432/postgres?user=postgres&password=postgres
+      PGO_user: postgres
+      PGO_password: postgres
+      SSO_ISSUER: https://sso.kaiserpfalz-edv.de/realms/delphi-council
+      SSO_CLIENT_ID: klenkes74
+      SSO_ROLE_ATTRIBUTE: groups
+      SSO_USERNAME_ATTRIBUTE: preferred_username
+      SSO_SCOPES: openid,profile,email,roles
+    env_file: 
+    - dev-dcis.env
+      # This file currently only contains a single line:
+      # SSO_CLIENT_SECRET: <oidc client secret for the provider>
+      # It is excluded via .gitignore from being checked into github.
+    volumes:
+    - ../../torganized-play-storm-knights/src/main/resources/application.yaml:/deployments/application.yaml:ro
+    tmpfs:
+    - /tmp
+    - /var/lib/run
+
+  dcis-gaming-db:
+    profiles:
+    - databases
+    container_name: dcis-gaming-db
+    image: docker.io/postgres:16.3-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+    - 5434:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes: 
+      - dev-gaming-db:/var/lib/postgresql/data:rw
+    tmpfs:
+    - /tmp
+    - /var/lib/run
 
 volumes:
   dev-players-db:
     driver: local
   dev-gaming-db:
     driver: local
-  dev-threads-db:
+  dev-threats-db:
     driver: local
   dev-stormnights-db:
     driver: local
