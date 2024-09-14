@@ -53,8 +53,8 @@ services:
   path: /commons
 - service: dcis-players
   path: /players
-- service: dcis-stormknights
-  path: /stormknights
+- service: dcis-operatives
+  path: /operatives
 - service: dcis-gaming
   path: /gaming
 - service: dcis-threats
@@ -80,7 +80,7 @@ ingress:
     cert-manager.io/renew-before: 1848h
   hosts:
   - dcis.torganized-play.org
-  - storm-knights.org
-  - www.storm-knights.org
-  - storm-knights.de
-  - www.storm-knights.de
+  - operatives.org
+  - www.operatives.org
+  - operatives.de
+  - www.operatives.de

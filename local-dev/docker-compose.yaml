@@ -100,21 +100,21 @@ services:
 # ==============================================================================
 # DCIS - Storm Knights
 # ------------------------------------------------------------------------------
-  dcis-stormknights:
+  dcis-operatives:
     profiles:
-    - dcis-stormknights
+    - dcis-operatives
     - services
-    container_name: dcis-stormknights
-    image: quay.io/paladinsinn/dcis/dcis-stormknights:1.0.0-SNAPSHOT
+    container_name: dcis-operatives
+    image: quay.io/paladinsinn/dcis/dcis-operatives:1.0.0-SNAPSHOT
     depends_on:
-      dcis-stormknights-db:
+      dcis-operatives-db:
         condition: service_healthy
     ports:
     - 8082:8080
     - 8092:8081
     environment:
       SPRING_PROFILES_ACTIVE: LOCAL
-      PGO_pgbouncer-jdbc-uri: jdbc:postgresql://dcis-stormknights-db:5432/postgres?user=postgres&password=postgres
+      PGO_pgbouncer-jdbc-uri: jdbc:postgresql://dcis-operatives-db:5432/postgres?user=postgres&password=postgres
       PGO_user: postgres
       PGO_password: postgres
       SSO_ISSUER: https://sso.kaiserpfalz-edv.de/realms/delphi-council
@@ -128,15 +128,15 @@ services:
       # SSO_CLIENT_SECRET: <oidc client secret for the provider>
       # It is excluded via .gitignore from being checked into github.
     volumes:
-    - ../../torganized-play-storm-knights/src/main/resources/application.yaml:/deployments/application.yaml:ro
+    - ../../torganized-play-operatives/src/main/resources/application.yaml:/deployments/application.yaml:ro
     tmpfs:
     - /tmp
     - /var/lib/run
 
-  dcis-stormknights-db:
+  dcis-operatives-db:
     profiles:
     - databases
-    container_name: dcis-stormknights-db
+    container_name: dcis-operatives-db
     image: docker.io/postgres:16.3-alpine
     restart: always
     environment:
@@ -151,7 +151,7 @@ services:
       timeout: 5s
       retries: 5
     volumes: 
-      - dev-stormknights-db:/var/lib/postgresql/data:rw
+      - dev-operatives-db:/var/lib/postgresql/data:rw
     tmpfs:
     - /tmp
     - /var/lib/run
@@ -188,7 +188,7 @@ services:
       # SSO_CLIENT_SECRET: <oidc client secret for the provider>
       # It is excluded via .gitignore from being checked into github.
     volumes:
-    - ../../torganized-play-storm-knights/src/main/resources/application.yaml:/deployments/application.yaml:ro
+    - ../../torganized-play-operatives/src/main/resources/application.yaml:/deployments/application.yaml:ro
     tmpfs:
     - /tmp
     - /var/lib/run
@@ -248,7 +248,7 @@ services:
       # SSO_CLIENT_SECRET: <oidc client secret for the provider>
       # It is excluded via .gitignore from being checked into github.
     volumes:
-    - ../../torganized-play-storm-knights/src/main/resources/application.yaml:/deployments/application.yaml:ro
+    - ../../torganized-play-operatives/src/main/resources/application.yaml:/deployments/application.yaml:ro
     tmpfs:
     - /tmp
     - /var/lib/run
