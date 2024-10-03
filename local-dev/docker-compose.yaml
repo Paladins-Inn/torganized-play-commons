@@ -18,7 +18,7 @@ services:
     depends_on:
       dcis-commons:
         condition: service_healthy
-      dcis-players:
+      dcis-users:
         condition: service_healthy
       dcis-gaming:
         condition: service_healthy
@@ -38,23 +38,23 @@ services:
     - 8090:8080
 
 # ==============================================================================
-# DCIS - Players
+# DCIS - Users
 # ------------------------------------------------------------------------------
-  dcis-players:
+  dcis-users:
     profiles:
-    - dcis-players
+    - dcis-users
     - services
-    container_name: dcis-players
-    image: quay.io/paladinsinn/dcis/dcis-players:1.0.0-SNAPSHOT
+    container_name: dcis-users
+    image: quay.io/paladinsinn/dcis/dcis-users:1.0.0-SNAPSHOT
     depends_on:
-      dcis-players-db:
+      dcis-users-db:
         condition: service_healthy
     ports:
     - 8081:8080
     - 8091:8081
     environment:
       SPRING_PROFILES_ACTIVE: LOCAL
-      PGO_pgbouncer-jdbc-uri: jdbc:postgresql://dcis-players-db:5432/postgres?user=postgres&password=postgres
+      PGO_pgbouncer-jdbc-uri: jdbc:postgresql://dcis-users-db:5432/postgres?user=postgres&password=postgres
       PGO_user: postgres
       PGO_password: postgres
       SSO_ISSUER: https://sso.kaiserpfalz-edv.de/realms/delphi-council
@@ -68,15 +68,15 @@ services:
       # SSO_CLIENT_SECRET: <oidc client secret for the provider>
       # It is excluded via .gitignore from being checked into github.
     volumes:
-    - ../../torganized-play-players/src/main/resources/application.yaml:/deployments/application.yaml:ro
+    - ../../torganized-play-users/src/main/resources/application.yaml:/deployments/application.yaml:ro
     tmpfs:
     - /tmp
     - /var/lib/run
 
-  dcis-players-db:
+  dcis-users-db:
     profiles:
     - databases
-    container_name: dcis-players-db
+    container_name: dcis-users-db
     image: docker.io/postgres:16.3-alpine
     restart: always
     environment:
@@ -91,7 +91,7 @@ services:
       timeout: 5s
       retries: 5
     volumes: 
-      - dev-players-db:/var/lib/postgresql/data:rw
+      - dev-users-db:/var/lib/postgresql/data:rw
     tmpfs:
     - /tmp
     - /var/lib/run
@@ -277,7 +277,7 @@ services:
     - /var/lib/run
 
 volumes:
-  dev-players-db:
+  dev-users-db:
     driver: local
   dev-gaming-db:
     driver: local

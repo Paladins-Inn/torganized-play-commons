@@ -51,8 +51,8 @@ services:
   path: /
 - service: dcis-commons
   path: /commons
-- service: dcis-players
-  path: /players
+- service: dcis-users
+  path: /users
 - service: dcis-operatives
   path: /operatives
 - service: dcis-gaming

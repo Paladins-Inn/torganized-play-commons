@@ -25,7 +25,7 @@
     </properties>
 
     <scm>
-        <url>https://github.com/Paladins-Inn/torganized-play-players</url>
+        <url>https://github.com/Paladins-Inn/torganized-play-users</url>
         <connection>scm:git:git://github.com/Paladins-Inn/torganized-play-commons.git</connection>
         <developerConnection>scm:git:git@github.com:Paladins-Inn/torganized-play-commons.git</developerConnection>
         <tag>HEAD</tag>
