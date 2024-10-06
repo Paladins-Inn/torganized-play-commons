@@ -1,0 +1,14 @@
+{{- if .Values.messaging.enabled -}}
+---
+kind: RabbitmqCluster
+apiVersion: rabbitmq.com/v1beta1
+metadata:
+{{- if .Values.messaging.brokername }}
+  name: {{ .Values.messaging.brokername }}
+{{- else }}
+  name: {{ include "dcis.fullname" . }}-broker
+{{- end }}
+  labels:
+    {{- include "dcis.labels" . | nindent 4 }}
+    app.kubernetes.io/component: broker
+{{- end }}

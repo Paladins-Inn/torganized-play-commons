@@ -80,7 +80,11 @@ ingress:
     cert-manager.io/renew-before: 1848h
   hosts:
   - dcis.torganized-play.org
-  - operatives.org
-  - www.operatives.org
-  - operatives.de
-  - www.operatives.de
+  - storm-knights.org
+  - www.storm-knights.org
+  - storm-knights.de
+  - www.storm-knights.de
+
+messaging:
+  enabled: true
+  brokername: dcis-broker
