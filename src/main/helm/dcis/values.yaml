@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 nameOverride: dcis
-partOf: torganized-play
+partOf: &partOf torganized-play
 
 microservice:
   nameOverride: commons
@@ -23,10 +23,6 @@ microservice:
     limits:
       cpu: 20m
       memory: 32Mi
-  sso:
-    enabled: false  
-  postgrescluster:
-    enabled: false
   metrics:
     enabled: false
   probes:
@@ -44,6 +40,17 @@ microservice:
       httpGet:
         path: /index.html
         port: http
+  sso:
+    enabled: false 
+    partOf: *partOf 
+  postgresql:
+    enabled: true
+    partOf: *partOf
+  rabbitmq:
+    enabled: true
+    create: true
+    broker: dcis-broker
+    partOf: *partOf
 
 
 services:
@@ -84,7 +91,3 @@ ingress:
   - www.storm-knights.org
   - storm-knights.de
   - www.storm-knights.de
-
-messaging:
-  enabled: true
-  brokername: dcis-broker
