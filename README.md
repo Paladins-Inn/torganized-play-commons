@@ -5,8 +5,19 @@
 > -- Balian, Kingdom of Heaven
 
 ## Abstract
+[![Java Library](https://github.com/Paladins-Inn/torganized-play-users/actions/workflows/java-library.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-users/actions/workflows/java-library.yaml)
+[![Container](https://github.com/Paladins-Inn/torganized-play-users/actions/workflows/docker-build.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-users/actions/workflows/docker-build.yaml)
+[![Helm Charts](https://github.com/Paladins-Inn/torganized-play-users/actions/workflows/helm-push.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-users/actions/workflows/helm-push.yaml)
 
-TBD
+## Abstract
+
+This is the common part of the DCIS.
+It contains three seperate artifacts:
+
+1. A Java Library containing commonly needed utility or configuration classes for all other SCSes.
+2. An OCI container containing the /commons branch of the SCSes containing the web assets used by all other containers.
+   This reduces web traffic since they can be cached.
+3. The Helm chart for deploying the /commons branch container and the central message broker.
 
 ## License
 
@@ -35,4 +46,5 @@ So no short cuts to get faster.
 And be prepared for some basic discussions about the architecture or software design :-).
 
 ---
-Berlin, 2024-06-01
+Berlin, 2024-06-01<br/>
+Updated: Bensheim, 2024-11-01
