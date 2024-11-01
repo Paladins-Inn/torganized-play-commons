@@ -5,7 +5,7 @@
 nameOverride: dcis
 partOf: &partOf torganized-play
 
-microservice:
+commons:
   nameOverride: commons
   partOf: torganized-play
   version: &version 1.0.0-SNAPSHOT
@@ -18,10 +18,10 @@ microservice:
     maxReplicas: 10
   resources:
     requests:
-      cpu: 10m
+      cpu: 50m
       memory: 16Mi
     limits:
-      cpu: 20m
+      cpu: 100m
       memory: 32Mi
   metrics:
     enabled: false
@@ -44,14 +44,13 @@ microservice:
     enabled: false 
     partOf: *partOf 
   postgresql:
-    enabled: true
+    enabled: false
     partOf: *partOf
   rabbitmq:
     enabled: true
     create: true
     broker: dcis-broker
     partOf: *partOf
-
 
 services:
 - service: dcis-commons
