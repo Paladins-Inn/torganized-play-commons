@@ -5,10 +5,8 @@
 > -- Balian, Kingdom of Heaven
 
 ## Abstract
-[![Java Library](https://github.com/Paladins-Inn/torganized-play-users/actions/workflows/java-library.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-users/actions/workflows/java-library.yaml)
-[![Container](https://github.com/Paladins-Inn/torganized-play-users/actions/workflows/docker-build.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-users/actions/workflows/docker-build.yaml)
-[![Helm Charts](https://github.com/Paladins-Inn/torganized-play-users/actions/workflows/helm-push.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-users/actions/workflows/helm-push.yaml)
-
+[![OCI-Container](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/docker-build.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/docker-build.yaml)
+[![Helm Chart](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/helm-push.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/helm-push.yaml)
 ## Abstract
 
 This is the common part of the DCIS.
@@ -18,6 +16,7 @@ It contains three seperate artifacts:
 2. An OCI container containing the /commons branch of the SCSes containing the web assets used by all other containers.
    This reduces web traffic since they can be cached.
 3. The Helm chart for deploying the /commons branch container and the central message broker.
+   The helm chart depends on the Kaiserpfalz EDV-Service charts for microservices and for rabbitMQ broker (managed via Operator)
 
 ## License
 
