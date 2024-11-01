@@ -9,7 +9,7 @@ spec:
   sources:
   - repoURL: quay.io/paladinsinn/helm
     chart: dcis-commons
-    targetRevision: 1.0.2
+    targetRevision: 1.0.3
     helm:
       valueFiles:
       - $values/torganized-play-dev/dcis-commons.yaml
