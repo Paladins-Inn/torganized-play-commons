@@ -53,5 +53,5 @@ jobs:
         run: |
           cd src/main/helm
           VERSION=$(egrep "^version: " dcis-commons/Chart.yaml|cut -d":" -f2|tr -d '[:space:]')
-          echo "Pushing helm chart https://${env.REGISTRY}:${VERSION}"
-          helm push dcis-commons-${VERSION}.tgz https://${env.REGISTRY}:${VERSION}
+          echo "Pushing helm chart oci://${{ env. REGISTRY}}:${VERSION}"
+          helm push dcis-commons-${VERSION}.tgz oci://${{ env. REGISTRY}}:${VERSION}
