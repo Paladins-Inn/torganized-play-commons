@@ -2,10 +2,10 @@ apiVersion: v2
 name: dcis-commons
 description: The installation for the Delphi Council Information System.
 type: application
-version: 1.0.2
+version: 1.0.3
 
 dependencies:
 - name: microservice
   alias: commons
-  version: "2.0.2"
+  version: "2.0.3"
   repository: oci://quay.io/kaiserpfalzedv/helm
