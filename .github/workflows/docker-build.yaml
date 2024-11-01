@@ -11,8 +11,8 @@ on:
     - 'main'
     - 'develop'
     paths-ignore:
-    - '.github/ISSUE_TEMPLATE/**'
-    - src/main/helm/**
+    - '.github/ISSUE_TEMPLATE/'
+    - src/main/helm/
     - CODE_OF_CONDUCT.md
     - CONTRIBUTING.md
     - 'KES Corporate Contributor License Agreement (2019-12-31).pdf'
