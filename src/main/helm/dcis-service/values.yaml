@@ -1,0 +1,116 @@
+# Default values for dcis.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: dcis-scs
+partOf: &partOf torganized-play
+version: &version 1.0.0-SNAPSHOT
+
+http:
+  nameOverride: dcis-scs-http
+  partOf: torganized-play
+  version: *version
+  image:
+    repository: quay.io/paladinsinn/dcis/dcis-service-http
+    pullPolicy: Always
+    tag: *version
+  autoscaling:
+    enabled: true
+    maxReplicas: 3
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 1024Mi
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+  metrics:
+    enabled: true
+  probes:
+    enabled: true
+    default: true
+  sso:
+    enabled: true
+    partOf: *partOf 
+  postgresql:
+    enabled: true
+    partOf: *partOf
+
+amqp:
+  nameOverride: dcis-scs-amqp
+  partOf: torganized-play
+  version: *version
+  image:
+    repository: quay.io/paladinsinn/dcis/dcis-service-amqp
+    pullPolicy: Always
+    tag: *version
+  autoscaling:
+    enabled: true
+    maxReplicas: 3
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 1024Mi
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+  metrics:
+    enabled: true
+  probes:
+    enabled: true
+    default: true
+  env:
+  # Database
+  - name: SPRING_DATASOURCE_URL
+    value: jdbc:postgresql://dcis-scs-http.svc/postgres
+  - name: SPRING_DATASOURCE_USERNAME
+    value: postgres
+  - name: SPRING_DATASOURCE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: dcis-scs-http-postgresql
+        key: postgres-password
+  - name: SPRING_RABBITMQ_HOST
+    valueFrom:
+      secretKeyRef:
+        name: dcis-broker-default-user
+        key: host
+  - name: SPRING_RABBITMQ_PORT
+    valueFrom:
+      secretKeyRef:
+        name: dcis-broker-default-user
+        key: port
+  - name: SPRING_RABBITMQ_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: dcis-broker-default-user
+        key: username
+  - name: SPRING_RABBITMQ_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: dcis-broker-default-user
+        key: password
+
+rabbitmq:
+  enabled: true
+  create: false
+  broker: &broker dcis-broker 
+  queues:
+  - name: dcis-users-log
+    spec:
+      name: "dcis.users.log"
+      type: stream
+      durable: true
+      arguments:
+        x-max-length-bytes: 1000000
+      rabbitmqClusterReference:
+        name: *broker
+  - name: dcis-users-register
+    spec:
+      name: "dcis.users.register"
+      type: stream
+      durable: true
+      arguments:
+        x-max-length-bytes: 1000000
+      rabbitmqClusterReference:
+        name: *broker
