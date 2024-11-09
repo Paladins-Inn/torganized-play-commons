@@ -3,13 +3,9 @@ name: Create OCI and publish to Quay
 
 # Configures this workflow to run every time a change is pushed to the branch called `release`.
 on:
-  pull_request:
-    branches:
-    - 'main'
   push:
     branches:
     - 'main'
-    - 'develop'
     paths-ignore:
     - '.github/ISSUE_TEMPLATE/'
     - src/main/helm/
@@ -58,5 +54,5 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.RELEASE_VERSION }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ github.ref_name }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ env.RELEASE_VERSION }}
           outputs: type=image,name=target
