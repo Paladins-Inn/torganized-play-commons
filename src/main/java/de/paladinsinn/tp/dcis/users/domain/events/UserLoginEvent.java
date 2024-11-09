@@ -16,17 +16,25 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.users.domain.model;
+package de.paladinsinn.tp.dcis.users.domain.events;
 
-import java.util.UUID;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
-import de.kaiserpfalzedv.commons.api.resources.HasId;
-import de.kaiserpfalzedv.commons.api.resources.HasName;
-import de.kaiserpfalzedv.commons.api.resources.HasNameSpace;
-import de.kaiserpfalzedv.commons.api.resources.HasTimestamps;
 
-@JsonDeserialize(as = UserImpl.class)
-public interface User extends HasId<UUID>, HasNameSpace, HasName, HasTimestamps {
-}
+/**
+ * The event sent when any user logs in.
+ *
+ * @author klenkes74
+ * @since 09.11.24
+ */
+@Jacksonized
+@SuperBuilder(toBuilder = true)
+@Getter
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class UserLoginEvent extends UserBaseEvent {}

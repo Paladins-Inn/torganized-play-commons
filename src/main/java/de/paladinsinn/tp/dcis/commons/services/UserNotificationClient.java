@@ -17,14 +17,12 @@
  */
 package de.paladinsinn.tp.dcis.commons.services;
 
-
-
+import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
 import org.springframework.stereotype.Service;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import de.paladinsinn.tp.dcis.users.domain.events.UserLoginInEvent;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
@@ -33,7 +31,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-
 
 /**
  * Client to send 
@@ -45,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Getter
-@ToString(onlyExplicitlyIncluded = true, includeFieldNames = true)
+@ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Slf4j
 public class UserNotificationClient implements AutoCloseable {
@@ -62,7 +59,7 @@ public class UserNotificationClient implements AutoCloseable {
   }
 
   @Subscribe
-  public void receiveUserLogin(final UserLoginInEvent event) {
+  public void receiveUserLogin(final UserLoginEvent event) {
     
   }
 }

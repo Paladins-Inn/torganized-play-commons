@@ -16,17 +16,19 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.users.domain.model;
+package de.paladinsinn.tp.dcis.commons;
+
+
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import de.kaiserpfalzedv.commons.api.resources.HasId;
-import de.kaiserpfalzedv.commons.api.resources.HasName;
-import de.kaiserpfalzedv.commons.api.resources.HasNameSpace;
-import de.kaiserpfalzedv.commons.api.resources.HasTimestamps;
-
-@JsonDeserialize(as = UserImpl.class)
-public interface User extends HasId<UUID>, HasNameSpace, HasName, HasTimestamps {
+@SuperBuilder(toBuilder = true)
+@AllArgsConstructor
+@Getter
+@ToString()
+@EqualsAndHashCode(of = {"id"})
+public abstract class DcisBaseEvent {
+    private final UUID id;
 }
