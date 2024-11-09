@@ -23,13 +23,12 @@ import java.util.EventObject;
 import java.util.UUID;
 
 import de.paladinsinn.tp.dcis.users.domain.model.User;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
 import lombok.ToString;
-import lombok.Builder.Default;
-import lombok.EqualsAndHashCode.Include;
 import lombok.extern.jackson.Jacksonized;
 import lombok.extern.slf4j.Slf4j;
 
