@@ -17,13 +17,9 @@
  */
 package de.paladinsinn.tp.dcis.commons.configuration;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.context.annotation.Import;
+
+import java.lang.annotation.*;
 
 
 /**
@@ -35,11 +31,7 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import({ 
-        ActuatorSecurityConfiguration.class,
-        RequestLoggingConfiguration.class,
-        RestTemplateProvider.class,
-        WebI18nConfiguration.class,
-        FilterRegistrations.class
+@Import({
+        RabbitTemplateProvider.class
  })
-public @interface EnableDefaultConfiguration {}
+public @interface EnableMessagingConfiguration {}
