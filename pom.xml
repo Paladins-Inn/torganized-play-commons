@@ -16,7 +16,7 @@
     <version>1.1.0-SNAPSHOT</version>
 
     <description>
-        Torganized Play - Delphi Council Information System. This are some java classes and so on that may be useful in different SCSses.
+        Torganized Play - Delphi Council Information System. These are some java classes and so on that may be useful in different SCSses.
     </description>
 
     <properties>
@@ -147,6 +147,11 @@
         </dependency>
 
         <!-- Security Updates after quay.io scan -->
+        <dependency><!-- GHSA-4g9r-vxhx-9pgx -->
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>[1.26.0,)</version>
+        </dependency>
         <dependency><!-- GHSA-7g45-4rm6-3mm3, GHSA-5mg8-w23w-74h3 -->
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
