@@ -7,6 +7,9 @@
 [![OCI-Container](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/docker-build.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/docker-build.yaml)
 [![Java Library](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/java-library.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/java-library.yaml)
 [![Helm Chart](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/helm-push.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/helm-push.yaml)
+[![CodeQL](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/github-code-scanning/codeql)
+[![Dependabot Updates](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/dependabot/dependabot-updates)
+[![Automatic Dependency Submission](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/dependency-graph/auto-submission/badge.svg)](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/dependency-graph/auto-submission)
 
 
 ## Abstract
