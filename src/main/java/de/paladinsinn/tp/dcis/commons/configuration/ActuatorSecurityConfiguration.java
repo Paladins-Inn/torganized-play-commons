@@ -26,6 +26,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -40,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Configuration
-@EnableWebSecurity(debug = false)
+@EnableWebSecurity()
 @Order(1)
 @RequiredArgsConstructor
 @Slf4j
@@ -59,9 +60,9 @@ public class ActuatorSecurityConfiguration {
                 
             )
             .httpBasic(h -> h.realmName("Observability"))
-            .cors(c -> c.disable())
-            .csrf(c -> c.disable())
-            .sessionManagement(s -> s.disable())
+            .cors(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(AbstractHttpConfigurer::disable)
             ;
 
         return http.build();
@@ -90,7 +91,7 @@ public class ActuatorSecurityConfiguration {
 
 	@Bean
 	public UserDetailsService userDetailsService() {
-        log.debug("Observability user. name={}, password={}, roles=[{}]", username, password, roles);
+        log.debug("Observability user. name={}, roles=[{}]", username, roles);
 
 		@SuppressWarnings("deprecation")
         UserDetails userDetails = User
