@@ -7,11 +7,12 @@ on:
     branches:
     - 'main'
     paths-ignore:
-    - '.github/ISSUE_TEMPLATE/'
+    - '.github/ISSUE_TEMPLATE/**'
     - .github/workflows/helm-push.yaml
     - .github/workflows/java-library.yaml
-    - src/main/helm/
-    - src/main/java/
+    - .github/dependabot.yml
+    - src/main/helm/**
+    - src/main/java/**
     - CODE_OF_CONDUCT.md
     - CONTRIBUTING.md
     - 'KES Corporate Contributor License Agreement (2019-12-31).pdf'
