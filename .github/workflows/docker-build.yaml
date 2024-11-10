@@ -8,6 +8,8 @@ on:
     - 'main'
     paths-ignore:
     - '.github/ISSUE_TEMPLATE/'
+    - .github/workflows/helm-push.yaml
+    - .github/workflows/java-library.yaml
     - src/main/helm/
     - src/main/java/
     - CODE_OF_CONDUCT.md

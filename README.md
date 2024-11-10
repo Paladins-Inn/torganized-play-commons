@@ -5,6 +5,7 @@
 > -- Balian, Kingdom of Heaven
 
 [![OCI-Container](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/docker-build.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/docker-build.yaml)
+[![Java Library](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/java-library.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/java-library.yaml)
 [![Helm Chart](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/helm-push.yaml/badge.svg)](https://github.com/Paladins-Inn/torganized-play-commons/actions/workflows/helm-push.yaml)
 
 
