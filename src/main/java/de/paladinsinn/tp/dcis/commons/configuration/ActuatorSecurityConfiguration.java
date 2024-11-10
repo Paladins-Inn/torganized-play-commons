@@ -61,7 +61,7 @@ public class ActuatorSecurityConfiguration {
             )
             .httpBasic(h -> h.realmName("Observability"))
             .cors(AbstractHttpConfigurer::disable)
-            .csrf(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable /* BAD - CSRF protection shouldn't be disabled */)
             .sessionManagement(AbstractHttpConfigurer::disable)
             ;
 
