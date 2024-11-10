@@ -7,5 +7,5 @@ version: 2
 updates:
   - package-ecosystem: "maven" # See documentation for possible values
     directory: "/" # Location of package manifests
-    schedule:https://github.com/Paladins-Inn/torganized-play-commons/blob/main/.github/dependabot.yml
+    schedule:
       interval: "weekly"
