@@ -50,6 +50,6 @@ jobs:
 
       - name: Compile stuff
         id: build-java
-        run: mvn test -U --batch-mode --no-transfer-progress
+        run: mvn deploy --batch-mode --no-transfer-progress
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
