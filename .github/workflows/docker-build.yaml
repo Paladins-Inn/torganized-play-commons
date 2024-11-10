@@ -17,6 +17,7 @@ on:
     - 'KES Corporate Contributor License Agreement (2019-12-31).pdf'
     - LICENSE
     - README.md
+    - pom.xml
     - SECURITY.md
   workflow_dispatch:
 
