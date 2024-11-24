@@ -23,6 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import de.paladinsinn.tp.dcis.commons.events.EventBusProvider;
 import org.springframework.context.annotation.Import;
 
 
@@ -40,6 +41,7 @@ import org.springframework.context.annotation.Import;
         RequestLoggingConfiguration.class,
         RestTemplateProvider.class,
         WebI18nConfiguration.class,
-        FilterRegistrations.class
+        FilterRegistrations.class,
+        EventBusProvider.class
  })
 public @interface EnableDefaultConfiguration {}

@@ -16,19 +16,27 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.commons;
+package de.paladinsinn.tp.dcis.commons.events;
 
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import com.google.common.eventbus.EventBus;
+import lombok.Getter;
+import lombok.ToString;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
-import java.util.UUID;
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_SINGLETON;
 
-@SuperBuilder(toBuilder = true)
-@AllArgsConstructor
-@Getter
-@ToString()
-@EqualsAndHashCode(of = {"id"})
-public abstract class DcisBaseEvent {
-    private final UUID id;
+
+/**
+ * @author klenkes74
+ * @since 24.11.24
+ */
+@Configuration
+@Scope(SCOPE_SINGLETON)
+@ToString
+public class EventBusProvider {
+  @Getter(onMethod = @__({@Bean}))
+  private final static EventBus bus = new LoggingEventBus();
 }
