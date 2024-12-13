@@ -37,10 +37,10 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitTemplateProvider {
 
     @Bean
-    public RabbitTemplate rabbitTemplate(final Jackson2JsonMessageConverter messageConverter) {
-        log.entry(messageConverter);
+    public RabbitTemplate rabbitTemplate(final Jackson2JsonMessageConverter messageConverter, final ConnectionFactory connectionFactory) {
+        log.entry(messageConverter, connectionFactory);
 
-        final var result = new RabbitTemplate();
+        final var result = new RabbitTemplate(connectionFactory);
         result.setMessageConverter(messageConverter);
 
         return log.exit(result);
