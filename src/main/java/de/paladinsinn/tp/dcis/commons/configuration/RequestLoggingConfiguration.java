@@ -19,6 +19,7 @@ package de.paladinsinn.tp.dcis.commons.configuration;
 
 
 
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
@@ -31,6 +32,7 @@ import org.springframework.web.filter.CommonsRequestLoggingFilter;
  * @since 2024-06-20
  */
 @Configuration
+@XSlf4j
 public class RequestLoggingConfiguration {
     @Bean
     public CommonsRequestLoggingFilter logFilter() {
@@ -47,6 +49,6 @@ public class RequestLoggingConfiguration {
         filter.setMaxPayloadLength(10000);
         filter.setIncludeHeaders(true);
 
-        return filter;
+        return log.exit(filter);
     }
 }

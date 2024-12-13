@@ -17,6 +17,7 @@
  */
 package de.paladinsinn.tp.dcis.commons.configuration;
 
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,17 +38,18 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 
 @Configuration
 @EnableWebSecurity()
 @Order(1)
 @RequiredArgsConstructor
-@Slf4j
+@XSlf4j
 public class ActuatorSecurityConfiguration {
     @Bean
     public SecurityFilterChain observabilitySecurity(HttpSecurity http) throws Exception {
+				log.entry(http);
+
         AntPathRequestMatcher matcher = new AntPathRequestMatcher("/actuator/**");
         AntPathRequestMatcher healthCheck = new AntPathRequestMatcher("/actuator/health/**");
 
@@ -65,13 +67,15 @@ public class ActuatorSecurityConfiguration {
             .sessionManagement(AbstractHttpConfigurer::disable)
             ;
 
-        return http.build();
+        return log.exit(http.build());
     }
 
     @Bean
 	public AuthenticationManager authenticationManager(
 			UserDetailsService userDetailsService,
 			PasswordEncoder passwordEncoder) {
+			log.entry(userDetailsService, passwordEncoder);
+
 		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 		authenticationProvider.setUserDetailsService(userDetailsService);
 		authenticationProvider.setPasswordEncoder(passwordEncoder);
@@ -79,19 +83,19 @@ public class ActuatorSecurityConfiguration {
 		ProviderManager providerManager = new ProviderManager(authenticationProvider);
 		providerManager.setEraseCredentialsAfterAuthentication(false);
 
-		return providerManager;
+		return log.exit(providerManager);
 	}
 
-    @Value("${spring.security.user.name}")
-    private String username;
-    @Value("${spring.security.user.password}")
-    private String password;
-    @Value("${spring.security.user.roles}")
-    private String roles;
+	@Value("${spring.security.user.name}")
+	private String username;
+	@Value("${spring.security.user.password}")
+	private String password;
+	@Value("${spring.security.user.roles}")
+	private String roles;
 
 	@Bean
 	public UserDetailsService userDetailsService() {
-        log.debug("Observability user. name={}, roles=[{}]", username, roles);
+		log.entry(username, roles);
 
 		@SuppressWarnings("deprecation")
         UserDetails userDetails = User
@@ -101,11 +105,11 @@ public class ActuatorSecurityConfiguration {
 			.roles(roles.split(","))
 			.build();
 
-		return new InMemoryUserDetailsManager(userDetails);
+		return log.exit(new InMemoryUserDetailsManager(userDetails));
 	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+		return log.exit(PasswordEncoderFactories.createDelegatingPasswordEncoder());
 	}
 }

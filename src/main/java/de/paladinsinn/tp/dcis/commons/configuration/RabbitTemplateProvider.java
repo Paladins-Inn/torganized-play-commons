@@ -18,6 +18,9 @@
 
 package de.paladinsinn.tp.dcis.commons.configuration;
 
+import lombok.extern.slf4j.XSlf4j;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.PooledChannelConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -30,17 +33,26 @@ import org.springframework.context.annotation.Configuration;
  * @since 2024-11-09
  */
 @Configuration
+@XSlf4j
 public class RabbitTemplateProvider {
 
     @Bean
     public RabbitTemplate rabbitTemplate(final Jackson2JsonMessageConverter messageConverter) {
+        log.entry(messageConverter);
+
         final var result = new RabbitTemplate();
         result.setMessageConverter(messageConverter);
-        return result;
+
+        return log.exit(result);
+    }
+
+    @Bean
+    public ConnectionFactory connectionFactory() {
+        return log.exit(new PooledChannelConnectionFactory(new com.rabbitmq.client.ConnectionFactory()));
     }
 
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
-        return new Jackson2JsonMessageConverter();
+        return log.exit(new Jackson2JsonMessageConverter());
     }
 }

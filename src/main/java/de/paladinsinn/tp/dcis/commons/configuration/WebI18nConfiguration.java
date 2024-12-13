@@ -17,6 +17,7 @@
  */
 package de.paladinsinn.tp.dcis.commons.configuration;
 
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,27 +30,31 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import de.kaiserpfalzedv.commons.spring.i18n.KaiserpfalzMessageSource;
 
 @Configuration
+@XSlf4j
 public class WebI18nConfiguration implements WebMvcConfigurer {
 
     @Bean
     public MessageSource messageSource() {
-        return new KaiserpfalzMessageSource();
+        return log.exit(new KaiserpfalzMessageSource());
     }
 
     @Bean
     public LocaleResolver localeResolver() {
-        return new CookieLocaleResolver();
+        return log.exit(new CookieLocaleResolver());
     }
 
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
         LocaleChangeInterceptor result = new LocaleChangeInterceptor();
         result.setParamName("lang");
-        return result;
+        return log.exit(result);
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        log.entry(registry);
+
         registry.addInterceptor(localeChangeInterceptor());
     }
     

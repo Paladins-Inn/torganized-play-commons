@@ -17,6 +17,7 @@
  */
 package de.paladinsinn.tp.dcis.commons.configuration;
 
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -28,9 +29,10 @@ import org.springframework.web.client.RestTemplate;
  * @since 2024-06-14
  */
 @Configuration
+@XSlf4j
 public class RestTemplateProvider {
     @Bean
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+        return log.exit(new RestTemplate());
     }
 }

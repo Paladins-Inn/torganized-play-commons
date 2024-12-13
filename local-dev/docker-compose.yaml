@@ -15,15 +15,29 @@ services:
     - ./proxy.conf:/etc/nginx/conf.d/default.conf:ro
     - ./../src/main/html/commons/1.0.0/assets/img/favicon.ico:/etc/nginx/html/favicon.ico
     - ./../src/main/html/index.html:/etc/nginx/html/index.html
+    networks:
+      - host
+      - dcis
     depends_on:
       dcis-commons:
         condition: service_healthy
       dcis-users:
         condition: service_healthy
-      dcis-gaming:
+      dcis-operatives:
         condition: service_healthy
-      dcis-threats:
-        condition: service_healthy
+
+  dcis-broker:
+    container_name: dcis-broker
+    image: docker.io/rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - dev-broker-lib:/var/lib/rabbitmq/
+      - dev-broker-log:/var/log/rabbitmq
+    networks:
+      - dcis
+
 
 # ==============================================================================
 # DCIS - Commons
@@ -33,9 +47,11 @@ services:
     - services
     container_name: dcis-commons
     restart: always
-    image: quay.io/paladinsinn/dcis/dcis-commons:1.0.0-SNAPSHOT
+    image: quay.io/paladinsinn/dcis/dcis-commons:1.1.0-SNAPSHOT
     ports:
     - 8090:8080
+    networks:
+      - dcis
 
 # ==============================================================================
 # DCIS - Users
@@ -45,9 +61,11 @@ services:
     - dcis-users
     - services
     container_name: dcis-users
-    image: quay.io/paladinsinn/dcis/dcis-users:1.0.0-SNAPSHOT
+    image: quay.io/paladinsinn/dcis/dcis-users:1.0.4
     depends_on:
       dcis-users-db:
+        condition: service_healthy
+      dcis-broker:
         condition: service_healthy
     ports:
     - 8081:8080
@@ -62,13 +80,17 @@ services:
       SSO_ROLE_ATTRIBUTE: groups
       SSO_USERNAME_ATTRIBUTE: preferred_username
       SSO_SCOPES: openid,profile,email,roles
-    env_file: 
+      SPRING_RABBITMQ_HOST: dcis-broker
+      SPRING_RABBITMQ_PORT: 5672
+    env_file:
     - dev-dcis.env
       # This file currently only contains a single line:
       # SSO_CLIENT_SECRET: <oidc client secret for the provider>
       # It is excluded via .gitignore from being checked into github.
     volumes:
     - ../../torganized-play-users/src/main/resources/application.yaml:/deployments/application.yaml:ro
+    networks:
+      - dcis
     tmpfs:
     - /tmp
     - /var/lib/run
@@ -92,6 +114,8 @@ services:
       retries: 5
     volumes: 
       - dev-users-db:/var/lib/postgresql/data:rw
+    networks:
+      - dcis
     tmpfs:
     - /tmp
     - /var/lib/run
@@ -105,9 +129,11 @@ services:
     - dcis-operatives
     - services
     container_name: dcis-operatives
-    image: quay.io/paladinsinn/dcis/dcis-operatives:1.0.0-SNAPSHOT
+    image: quay.io/paladinsinn/dcis/dcis-operatives:1.1.0-SNAPSHOT
     depends_on:
       dcis-operatives-db:
+        condition: service_healthy
+      dcis-broker:
         condition: service_healthy
     ports:
     - 8082:8080
@@ -122,13 +148,17 @@ services:
       SSO_ROLE_ATTRIBUTE: groups
       SSO_USERNAME_ATTRIBUTE: preferred_username
       SSO_SCOPES: openid,profile,email,roles
-    env_file: 
+      SPRING_RABBITMQ_HOST: dcis-broker
+      SPRING_RABBITMQ_PORT: 5672
+    env_file:
     - dev-dcis.env
       # This file currently only contains a single line:
       # SSO_CLIENT_SECRET: <oidc client secret for the provider>
       # It is excluded via .gitignore from being checked into github.
     volumes:
     - ../../torganized-play-operatives/src/main/resources/application.yaml:/deployments/application.yaml:ro
+    networks:
+      - dcis
     tmpfs:
     - /tmp
     - /var/lib/run
@@ -152,136 +182,25 @@ services:
       retries: 5
     volumes: 
       - dev-operatives-db:/var/lib/postgresql/data:rw
+    networks:
+      - dcis
     tmpfs:
     - /tmp
     - /var/lib/run
 
-
-# ==============================================================================
-# DCIS - Threats Database
-# ------------------------------------------------------------------------------
-  dcis-threats:
-    profiles:
-    - dcis-threats
-    - services
-    container_name: dcis-threats
-    image: quay.io/paladinsinn/dcis/dcis-threats:1.0.0-SNAPSHOT
-    depends_on:
-      dcis-threats-db:
-        condition: service_healthy
-    ports:
-    - 8082:8080
-    - 8092:8081
-    environment:
-      SPRING_PROFILES_ACTIVE: LOCAL
-      PGO_pgbouncer-jdbc-uri: jdbc:postgresql://dcis-threats-db:5432/postgres?user=postgres&password=postgres
-      PGO_user: postgres
-      PGO_password: postgres
-      SSO_ISSUER: https://sso.kaiserpfalz-edv.de/realms/delphi-council
-      SSO_CLIENT_ID: klenkes74
-      SSO_ROLE_ATTRIBUTE: groups
-      SSO_USERNAME_ATTRIBUTE: preferred_username
-      SSO_SCOPES: openid,profile,email,roles
-    env_file: 
-    - dev-dcis.env
-      # This file currently only contains a single line:
-      # SSO_CLIENT_SECRET: <oidc client secret for the provider>
-      # It is excluded via .gitignore from being checked into github.
-    volumes:
-    - ../../torganized-play-operatives/src/main/resources/application.yaml:/deployments/application.yaml:ro
-    tmpfs:
-    - /tmp
-    - /var/lib/run
-
-  dcis-threats-db:
-    profiles:
-    - databases
-    container_name: dcis-threats-db
-    image: docker.io/postgres:16.3-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    ports:
-    - 5434:5432
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      start_period: 10s
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    volumes: 
-      - dev-threats-db:/var/lib/postgresql/data:rw
-    tmpfs:
-    - /tmp
-    - /var/lib/run
-
-
-# ==============================================================================
-# DCIS - Threats Database
-# ------------------------------------------------------------------------------
-  dcis-gaming:
-    profiles:
-    - dcis-gaming
-    - services
-    container_name: dcis-gaming
-    image: quay.io/paladinsinn/dcis/dcis-gaming:1.0.0-SNAPSHOT
-    depends_on:
-      dcis-gaming-db:
-        condition: service_healthy
-    ports:
-    - 8082:8080
-    - 8092:8081
-    environment:
-      SPRING_PROFILES_ACTIVE: LOCAL
-      PGO_pgbouncer-jdbc-uri: jdbc:postgresql://dcis-gaming-db:5432/postgres?user=postgres&password=postgres
-      PGO_user: postgres
-      PGO_password: postgres
-      SSO_ISSUER: https://sso.kaiserpfalz-edv.de/realms/delphi-council
-      SSO_CLIENT_ID: klenkes74
-      SSO_ROLE_ATTRIBUTE: groups
-      SSO_USERNAME_ATTRIBUTE: preferred_username
-      SSO_SCOPES: openid,profile,email,roles
-    env_file: 
-    - dev-dcis.env
-      # This file currently only contains a single line:
-      # SSO_CLIENT_SECRET: <oidc client secret for the provider>
-      # It is excluded via .gitignore from being checked into github.
-    volumes:
-    - ../../torganized-play-operatives/src/main/resources/application.yaml:/deployments/application.yaml:ro
-    tmpfs:
-    - /tmp
-    - /var/lib/run
-
-  dcis-gaming-db:
-    profiles:
-    - databases
-    container_name: dcis-gaming-db
-    image: docker.io/postgres:16.3-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    ports:
-    - 5434:5432
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      start_period: 10s
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    volumes: 
-      - dev-gaming-db:/var/lib/postgresql/data:rw
-    tmpfs:
-    - /tmp
-    - /var/lib/run
 
 volumes:
   dev-users-db:
     driver: local
-  dev-gaming-db:
+  dev-operatives-db:
     driver: local
-  dev-threats-db:
+  dev-broker-lib:
     driver: local
-  dev-stormnights-db:
+  dev-broker-log:
     driver: local
+
+networks:
+  host:
+    driver: host
+  dcis:
+    driver: host
