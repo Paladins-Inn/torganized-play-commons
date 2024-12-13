@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Import;
 @Documented
 @Import({ 
         ActuatorSecurityConfiguration.class,
+        WebSecurityConfiguration.class,
         RequestLoggingConfiguration.class,
         RestTemplateProvider.class,
         WebI18nConfiguration.class,
