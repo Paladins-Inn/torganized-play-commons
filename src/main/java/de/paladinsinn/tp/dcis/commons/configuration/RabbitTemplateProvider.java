@@ -18,11 +18,13 @@
 
 package de.paladinsinn.tp.dcis.commons.configuration;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.XSlf4j;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.PooledChannelConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,8 +35,17 @@ import org.springframework.context.annotation.Configuration;
  * @since 2024-11-09
  */
 @Configuration
+@RequiredArgsConstructor
 @XSlf4j
 public class RabbitTemplateProvider {
+    @Value("${spring.rabbitmq.host}")
+    private final String host;
+    @Value("${spring.rabbitmq.port}")
+    private final String port;
+    @Value("${spring.rabbitmq.username}")
+    private final String username;
+    @Value("${spring.rabbitmq.password}")
+    private final String password;
 
     @Bean
     public RabbitTemplate rabbitTemplate(final Jackson2JsonMessageConverter messageConverter, final ConnectionFactory connectionFactory) {
@@ -48,7 +59,13 @@ public class RabbitTemplateProvider {
 
     @Bean
     public ConnectionFactory connectionFactory() {
-        return log.exit(new PooledChannelConnectionFactory(new com.rabbitmq.client.ConnectionFactory()));
+        com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
+        factory.setHost(host);
+        factory.setUsername(username);
+        factory.setPassword(password);
+        factory.setPort(Integer.getInteger(port));
+
+        return log.exit(new PooledChannelConnectionFactory(factory));
     }
 
     @Bean
