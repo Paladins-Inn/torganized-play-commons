@@ -38,9 +38,9 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 @XSlf4j
 public class RabbitTemplateProvider {
-    @Value("${spring.rabbitmq.host}")
+    @Value("${spring.rabbitmq.host:localhost}")
     private final String host;
-    @Value("${spring.rabbitmq.port}")
+    @Value("${spring.rabbitmq.port:5672}")
     private final String port;
     @Value("${spring.rabbitmq.username}")
     private final String username;
