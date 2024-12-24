@@ -27,6 +27,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
@@ -56,6 +58,10 @@ public class WebSecurityConfiguration {
 
         MvcRequestMatcher.Builder matcher = new MvcRequestMatcher.Builder(introspector);
 
+        CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
+        // set the name of the attribute the CsrfToken will be populated on
+        csrfRequestHandler.setCsrfRequestAttributeName(null);
+
 		http
             .authorizeHttpRequests(a -> a
                     .requestMatchers(matcher.pattern("/public/**")).permitAll()
@@ -71,9 +77,13 @@ public class WebSecurityConfiguration {
                 .addLogoutHandler(keycloakLogoutHandler)
                 .logoutSuccessUrl(issuerUri + "/protocol/openid-connect/logout")
             )
+
             .cors(Customizer.withDefaults())
-            .csrf(Customizer.withDefaults())
-            
+
+            .csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrfTokenRequestHandler(csrfRequestHandler)
+            )
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
             .rememberMe(Customizer.withDefaults())
             ;
