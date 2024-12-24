@@ -16,7 +16,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.commons.configuration;
+package de.paladinsinn.tp.dcis.commons.rest;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 
 
 @Configuration
-@EnableWebSecurity(debug = false)
+@EnableWebSecurity
 @EnableKeycloakSecurityIntegration
 @Order(2)
 @RequiredArgsConstructor
