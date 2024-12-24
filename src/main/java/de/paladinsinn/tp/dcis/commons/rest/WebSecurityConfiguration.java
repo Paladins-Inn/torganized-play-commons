@@ -64,7 +64,7 @@ public class WebSecurityConfiguration {
 
 		http
             .authorizeHttpRequests(a -> a
-                    .requestMatchers(matcher.pattern("/public/**")).permitAll()
+                    .requestMatchers(matcher.pattern("/(ouath2|public|webjars)/**")).permitAll()
                     .anyRequest().authenticated()
             )
             .oauth2Login(l -> l
