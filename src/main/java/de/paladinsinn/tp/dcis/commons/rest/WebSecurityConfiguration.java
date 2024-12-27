@@ -18,6 +18,7 @@
 
 package de.paladinsinn.tp.dcis.commons.rest;
 
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,18 +44,19 @@ import lombok.RequiredArgsConstructor;
 @EnableKeycloakSecurityIntegration
 @Order(2)
 @RequiredArgsConstructor
+@XSlf4j
 public class WebSecurityConfiguration {
     @Value("${spring.security.oauth2.client.provider.sso.issuer-uri}")
     private String issuerUri;
 
-
     @Bean
-	public SecurityFilterChain userSecurityFilterChain(
+	  public SecurityFilterChain userSecurityFilterChain(
         HttpSecurity http, 
         HandlerMappingIntrospector introspector, 
         KeycloakGroupAuthorityMapper authoritiesMapper,
         KeycloakLogoutHandler keycloakLogoutHandler
-        ) throws Exception {
+    ) throws Exception {
+        log.entry(http, introspector, authoritiesMapper, keycloakLogoutHandler);
 
         MvcRequestMatcher.Builder matcher = new MvcRequestMatcher.Builder(introspector);
 
@@ -62,7 +64,7 @@ public class WebSecurityConfiguration {
         // set the name of the attribute the CsrfToken will be populated on
         csrfRequestHandler.setCsrfRequestAttributeName(null);
 
-		http
+		    http
             .authorizeHttpRequests(a -> a
                     .requestMatchers(matcher.pattern("/(ouath2|public|webjars|login)/**")).permitAll()
                     .anyRequest().authenticated()
@@ -70,8 +72,7 @@ public class WebSecurityConfiguration {
             .oauth2Login(l -> l
                 .authorizationEndpoint(Customizer.withDefaults())
                 .tokenEndpoint(Customizer.withDefaults())
-                .userInfoEndpoint(u -> u.userAuthoritiesMapper(authoritiesMapper)
-    )
+                .userInfoEndpoint(u -> u.userAuthoritiesMapper(authoritiesMapper))
             )
             .logout(l -> l
                 .addLogoutHandler(keycloakLogoutHandler)
@@ -88,6 +89,6 @@ public class WebSecurityConfiguration {
             .rememberMe(Customizer.withDefaults())
             ;
 
-        return http.build();
+        return log.exit(http.build());
 	}
 }
