@@ -49,6 +49,9 @@ public class WebSecurityConfiguration {
     @Value("${spring.security.oauth2.client.provider.sso.issuer-uri}")
     private String issuerUri;
 
+    @Value("${server.servlet.path:/}")
+    private String servletPath;
+
     @Bean
 	  public SecurityFilterChain userSecurityFilterChain(
         HttpSecurity http, 
@@ -56,18 +59,21 @@ public class WebSecurityConfiguration {
         KeycloakGroupAuthorityMapper authoritiesMapper,
         KeycloakLogoutHandler keycloakLogoutHandler
     ) throws Exception {
-        log.entry(http, introspector, authoritiesMapper, keycloakLogoutHandler);
-
-        MvcRequestMatcher.Builder matcher = new MvcRequestMatcher.Builder(introspector);
+        log.entry(http, introspector, authoritiesMapper, keycloakLogoutHandler, servletPath);
 
         CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
         // set the name of the attribute the CsrfToken will be populated on
         csrfRequestHandler.setCsrfRequestAttributeName(null);
 
+        MvcRequestMatcher.Builder requestMapper = new MvcRequestMatcher.Builder(introspector).servletPath(servletPath);
+
 		    http
             .authorizeHttpRequests(a -> a
-                    .requestMatchers(matcher.pattern("/(ouath2|public|webjars|login)/**")).permitAll()
-                    .anyRequest().authenticated()
+                .requestMatchers(requestMapper.pattern("/public")).permitAll()
+                .requestMatchers(requestMapper.pattern("/login")).permitAll()
+                .requestMatchers(requestMapper.pattern("/oauth2/**")).permitAll()
+                .requestMatchers(requestMapper.pattern("/webjars/**")).permitAll()
+                .anyRequest().authenticated()
             )
             .oauth2Login(l -> l
                 .authorizationEndpoint(Customizer.withDefaults())
