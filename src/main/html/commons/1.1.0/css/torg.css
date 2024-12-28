@@ -25,7 +25,7 @@
     background-image: url("/commons/1.1.0/assets/img/marble.png");
     border-image-source: url("/commons/1.1.0/assets/img/paper.png");
     border-image-slice: 50 50 50 50 fill;
-    border-image-width: 50px;
+    border-image-width: 50;
     border-image-outset: 0px 0px 0px 0px;
     border-image-repeat: stretch;
 }
