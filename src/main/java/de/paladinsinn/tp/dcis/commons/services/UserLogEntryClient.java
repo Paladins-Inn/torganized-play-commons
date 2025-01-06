@@ -21,13 +21,20 @@ import com.google.common.eventbus.Subscribe;
 import de.paladinsinn.tp.dcis.commons.events.LoggingEventBus;
 import de.paladinsinn.tp.dcis.commons.messaging.EventSender;
 import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
+import de.paladinsinn.tp.dcis.users.domain.model.User;
+import de.paladinsinn.tp.dcis.users.domain.model.UserLogEntry;
+import de.paladinsinn.tp.dcis.users.domain.model.UserLogEntryImpl;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.XSlf4j;
 import org.springframework.amqp.core.Queue;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.HashMap;
 
 
 /**
@@ -41,9 +48,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 @XSlf4j
 public class UserLogEntryClient {
-  private final EventSender<UserLoginEvent> service;
+  private final EventSender<UserLogEntry> service;
   private final LoggingEventBus bus;
   private final Queue userLogQueue;
+  
+  private final HashMap<User, Instant> lastLogin = new HashMap<>();
+  
+  @Value("${spring.application.name:unknown}")
+  private String application;
 
   @PostConstruct
   public void init() {
@@ -65,8 +77,33 @@ public class UserLogEntryClient {
   public void send(final UserLoginEvent event) {
     log.entry(userLogQueue, event);
 
-    service.send(userLogQueue, event);
+    if (!isAlreadyLoggedIn(event.getUser())) {
+      service.send(userLogQueue, createUserLogEntry(event));
+      log.info("User has been logged in. user={}", event.getUser());
+    } else {
+      log.info("User has been logged in during the last hour. Ignoring this login event. user={}", event.getUser());
+    }
 
     log.exit();
+  }
+  
+  private UserLogEntry createUserLogEntry(UserLoginEvent event) {
+    return log.exit(
+        UserLogEntryImpl.builder()
+            .id(event.getId())
+            .system(application)
+            .text("User logged in. namespace=" + event.getUser().getNameSpace() + ", name=" + event.getUser().getName())
+            .build()
+    );
+  }
+  
+  private boolean isAlreadyLoggedIn(User user) {
+    log.entry(user);
+    
+    boolean result = !lastLogin.containsKey(user)
+        || (lastLogin.containsKey(user) && lastLogin.get(user).isBefore(Instant.now().minusSeconds(3600)));
+    lastLogin.put(user, Instant.now());
+    
+    return log.exit(result);
   }
 }

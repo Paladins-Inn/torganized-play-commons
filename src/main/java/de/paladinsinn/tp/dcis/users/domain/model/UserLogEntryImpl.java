@@ -1,5 +1,6 @@
 package de.paladinsinn.tp.dcis.users.domain.model;
 
+import java.io.Serial;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -13,13 +14,16 @@ import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 
 @Jacksonized
-@Builder(toBuilder = true, setterPrefix = "")
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-@ToString(includeFieldNames = true)
+@ToString
 @EqualsAndHashCode(of = {"id"})
 public class UserLogEntryImpl implements UserLogEntry {
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private UUID id;
     private OffsetDateTime created;
     private OffsetDateTime modified;
