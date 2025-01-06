@@ -42,11 +42,11 @@ import static org.slf4j.ext.XLogger.Level.INFO;
 @XSlf4j
 public class LoggingEventBus extends EventBus {
   public LoggingEventBus() {
-    log.entry();
+    log.entry(this);
 
     register(this);
 
-    log.exit();
+    log.exit(this);
   }
 
   @SuppressWarnings("unused") // It is used by the EventBus
@@ -56,7 +56,7 @@ public class LoggingEventBus extends EventBus {
 
     log.error("Event has not been processed by any subscriber. event={}", event);
 
-    log.exit();
+    log.exit(event);
   }
 
 
@@ -66,7 +66,7 @@ public class LoggingEventBus extends EventBus {
 
     super.register(object);
 
-    log.exit();
+    log.exit(object);
   }
 
   @Override
@@ -80,7 +80,7 @@ public class LoggingEventBus extends EventBus {
       log.catching(INFO, e);
     }
 
-    log.exit();
+    log.exit(object);
   }
 
   @Override
@@ -89,6 +89,6 @@ public class LoggingEventBus extends EventBus {
 
     super.post(event);
 
-    log.exit();
+    log.exit(event);
   }
 }
