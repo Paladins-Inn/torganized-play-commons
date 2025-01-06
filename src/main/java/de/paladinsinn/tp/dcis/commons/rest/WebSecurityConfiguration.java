@@ -69,10 +69,10 @@ public class WebSecurityConfiguration {
 
 		    http
             .authorizeHttpRequests(a -> a
-                .requestMatchers(requestMapper.pattern("/public")).permitAll()
-                .requestMatchers(requestMapper.pattern("/login")).permitAll()
-                .requestMatchers(requestMapper.pattern("/oauth2/**")).permitAll()
-                .requestMatchers(requestMapper.pattern("/webjars/**")).permitAll()
+                .requestMatchers(requestMapper.pattern("/public")).anonymous()
+                .requestMatchers(requestMapper.pattern("/login")).anonymous()
+                .requestMatchers(requestMapper.pattern("/oauth2/**")).anonymous()
+                .requestMatchers(requestMapper.pattern("/webjars/**")).anonymous()
                 .anyRequest().authenticated()
             )
             .oauth2Login(l -> l
