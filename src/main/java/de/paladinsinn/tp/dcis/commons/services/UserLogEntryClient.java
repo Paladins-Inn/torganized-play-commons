@@ -17,8 +17,8 @@
  */
 package de.paladinsinn.tp.dcis.commons.services;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import de.paladinsinn.tp.dcis.commons.events.LoggingEventBus;
 import de.paladinsinn.tp.dcis.commons.messaging.EventSender;
 import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
 import jakarta.annotation.PostConstruct;
@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
 @XSlf4j
 public class UserLogEntryClient {
   private final EventSender<UserLoginEvent> service;
-  private final EventBus bus;
+  private final LoggingEventBus bus;
   private final Queue userLogQueue;
 
   @PostConstruct

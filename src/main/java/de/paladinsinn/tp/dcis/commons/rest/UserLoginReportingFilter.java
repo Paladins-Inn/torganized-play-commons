@@ -21,6 +21,7 @@ package de.paladinsinn.tp.dcis.commons.rest;
 
 import com.google.common.eventbus.EventBus;
 import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
+import de.paladinsinn.tp.dcis.users.domain.model.User;
 import de.paladinsinn.tp.dcis.users.domain.model.UserImpl;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -29,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.XSlf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
@@ -67,20 +68,30 @@ public class UserLoginReportingFilter implements ApplicationListener<Authenticat
         log.entry(event);
         
         loggingEventBus.post(createEvent(event));
+        
+        log.exit();
     }
     
     private UserLoginEvent createEvent(final AuthenticationSuccessEvent event) {
         log.entry(event);
         
-        User user = (User) event.getAuthentication().getPrincipal();
+        OAuth2LoginAuthenticationToken authenticationToken = (OAuth2LoginAuthenticationToken) event.getSource();
         
         return log.exit(
             UserLoginEvent.builder()
-                .user(UserImpl.builder()
-                        .name(user.getUsername())
-                        .build()
-                )
+                .user(readUserFromOAuth2Token(authenticationToken))
             .build()
+        );
+    }
+    
+    private User readUserFromOAuth2Token(final OAuth2LoginAuthenticationToken user) {
+        log.entry(user);
+        
+        return log.exit(
+            UserImpl.builder()
+                .name(user.getName())
+                .nameSpace(user.getPrincipal().getAttribute("iss"))
+                .build()
         );
     }
 }
