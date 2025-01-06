@@ -30,11 +30,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.XSlf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
-import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import java.io.Closeable;
+import java.util.UUID;
 
 
 /**
@@ -75,22 +76,23 @@ public class UserLoginReportingFilter implements ApplicationListener<Authenticat
     private UserLoginEvent createEvent(final AuthenticationSuccessEvent event) {
         log.entry(event);
         
-        OAuth2LoginAuthenticationToken authenticationToken = (OAuth2LoginAuthenticationToken) event.getSource();
+        DefaultOidcUser user = (DefaultOidcUser) event.getAuthentication().getPrincipal();
         
         return log.exit(
             UserLoginEvent.builder()
-                .user(readUserFromOAuth2Token(authenticationToken))
+                .user(readUserFromOAuth2Token(user))
             .build()
         );
     }
     
-    private User readUserFromOAuth2Token(final OAuth2LoginAuthenticationToken user) {
+    private User readUserFromOAuth2Token(final DefaultOidcUser user) {
         log.entry(user);
         
         return log.exit(
             UserImpl.builder()
+                .id(UUID.fromString(user.getSubject()))
                 .name(user.getName())
-                .nameSpace(user.getPrincipal().getAttribute("iss"))
+                .nameSpace(user.getIssuer().toString())
                 .build()
         );
     }
