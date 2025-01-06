@@ -35,8 +35,7 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import({ 
-        EventBusProvider.class,
+@Import({
         LoggingEventBus.class
 })
 public @interface EnableEventBus {}
