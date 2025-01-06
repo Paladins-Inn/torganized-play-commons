@@ -35,5 +35,6 @@ public abstract class DcisBaseEvent implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private final UUID id;
+    @Builder.Default
+    private final UUID id = UUID.randomUUID();
 }

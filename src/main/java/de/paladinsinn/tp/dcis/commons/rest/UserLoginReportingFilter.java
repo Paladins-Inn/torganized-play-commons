@@ -31,7 +31,7 @@ import lombok.extern.slf4j.XSlf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
 import java.io.Closeable;
@@ -42,7 +42,7 @@ import java.util.UUID;
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
  * @since 2025-01-06
  */
-@Component
+@Service
 @RequiredArgsConstructor(onConstructor_ = @__(@Inject))
 @XSlf4j
 public class UserLoginReportingFilter implements ApplicationListener<AuthenticationSuccessEvent>, Closeable {
