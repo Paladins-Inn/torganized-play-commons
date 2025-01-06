@@ -19,7 +19,7 @@
 package de.paladinsinn.kp.docs.commons.configuration;
 
 
-import de.paladinsinn.tp.dcis.commons.messaging.RabbitTemplateProvider;
+import de.paladinsinn.tp.dcis.commons.messaging.MessagingConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class RabbitTemplateProviderTest {
   @Autowired
-  private RabbitTemplateProvider sut;
+  private MessagingConfiguration sut;
 
   @Test
   public void shouldProvideAValidMessageConverter() {

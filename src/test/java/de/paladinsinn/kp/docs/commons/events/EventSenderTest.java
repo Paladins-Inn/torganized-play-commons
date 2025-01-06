@@ -19,7 +19,7 @@
 package de.paladinsinn.kp.docs.commons.events;
 
 
-import de.paladinsinn.tp.dcis.commons.events.EventSender;
+import de.paladinsinn.tp.dcis.commons.messaging.EventSender;
 import lombok.ToString;
 import lombok.extern.slf4j.XSlf4j;
 import org.junit.jupiter.api.Test;
@@ -58,6 +58,7 @@ public class EventSenderTest {
 
   @TestConfiguration
   static class EventSenderTestContextConfiguration {
+    // FIXME 2025-01-06 rlichti MockBean is deprecated since spring-boot 3.4.0 and will be removed in 3.6.0
     @MockBean
     static RabbitTemplate rabbitTemplate;
 

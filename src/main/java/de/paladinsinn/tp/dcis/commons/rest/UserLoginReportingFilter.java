@@ -1,0 +1,86 @@
+/*
+ * Copyright (c) 2025. Kaiserpfalz EDV-Service, Roland T. Lichti
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 3 of the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public License
+ *  along with this program; if not, write to the Free Software Foundation,
+ *  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
+package de.paladinsinn.tp.dcis.commons.rest;
+
+
+import com.google.common.eventbus.EventBus;
+import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
+import de.paladinsinn.tp.dcis.users.domain.model.UserImpl;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.XSlf4j;
+import org.springframework.context.ApplicationListener;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Nonnull;
+import java.io.Closeable;
+
+
+/**
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
+ * @since 2025-01-06
+ */
+@Component
+@RequiredArgsConstructor(onConstructor_ = @__(@Inject))
+@XSlf4j
+public class UserLoginReportingFilter implements ApplicationListener<AuthenticationSuccessEvent>, Closeable {
+
+    private final EventBus loggingEventBus;
+    
+    @PostConstruct
+    public void init() {
+        log.entry();
+        loggingEventBus.register(this);
+        log.exit();
+    }
+
+    @PreDestroy
+    @Override
+    public void close() {
+        log.entry();
+        loggingEventBus.unregister(this);
+        log.exit();
+    }
+    
+    @Override
+    public void onApplicationEvent(@Nonnull AuthenticationSuccessEvent event) {
+        log.entry(event);
+        
+        loggingEventBus.post(createEvent(event));
+    }
+    
+    private UserLoginEvent createEvent(final AuthenticationSuccessEvent event) {
+        log.entry(event);
+        
+        User user = (User) event.getAuthentication().getPrincipal();
+        
+        return log.exit(
+            UserLoginEvent.builder()
+                .user(UserImpl.builder()
+                        .name(user.getUsername())
+                        .build()
+                )
+            .build()
+        );
+    }
+}

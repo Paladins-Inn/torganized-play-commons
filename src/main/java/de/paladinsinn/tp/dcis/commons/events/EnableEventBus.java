@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Documented
 @Import({ 
-        EventBusProvider.class
+        EventBusProvider.class,
+        LoggingEventBus.class
 })
 public @interface EnableEventBus {}

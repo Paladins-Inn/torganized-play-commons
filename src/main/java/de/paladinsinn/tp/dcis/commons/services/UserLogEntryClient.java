@@ -17,27 +17,56 @@
  */
 package de.paladinsinn.tp.dcis.commons.services;
 
-
-
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import de.paladinsinn.tp.dcis.commons.messaging.EventSender;
+import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.XSlf4j;
+import org.springframework.amqp.core.Queue;
 import org.springframework.stereotype.Service;
-
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 
 
 /**
- * 
+ *  This service reports all user login event to the AMQP queue for user logins.
+ *
  * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
- * @version 1.0.0
+ * @version 1.1.0
  * @since 2024-11-05
  */
 @Service
-@AllArgsConstructor
-@ToString(onlyExplicitlyIncluded = true, includeFieldNames = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@XSlf4j
 public class UserLogEntryClient {
-  
+  private final EventSender<UserLoginEvent> service;
+  private final EventBus bus;
+  private final Queue userLogQueue;
+
+  @PostConstruct
+  public void init() {
+    log.entry(service, bus, userLogQueue);
+
+    bus.register(this);
+    log.exit();
+  }
+
+  @PreDestroy
+  public void shutdown() {
+    log.entry(service, bus, userLogQueue);
+    bus.unregister(this);
+    log.exit();
+  }
+
+  @SuppressWarnings("unused") // It is used by the event bus
+  @Subscribe
+  public void send(final UserLoginEvent event) {
+    log.entry(userLogQueue, event);
+
+    service.send(userLogQueue, event);
+
+    log.exit();
+  }
 }

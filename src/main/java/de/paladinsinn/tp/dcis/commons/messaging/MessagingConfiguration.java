@@ -19,7 +19,9 @@
 package de.paladinsinn.tp.dcis.commons.messaging;
 
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.XSlf4j;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.PooledChannelConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -36,8 +38,9 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @RequiredArgsConstructor
+@ToString
 @XSlf4j
-public class RabbitTemplateProvider {
+public class MessagingConfiguration {
     @Value("${spring.rabbitmq.host:localhost}")
     private final String host;
     @Value("${spring.rabbitmq.port:5672}")
@@ -45,6 +48,7 @@ public class RabbitTemplateProvider {
     @Value("${spring.rabbitmq.username}")
     private final String username;
     @Value("${spring.rabbitmq.password}")
+    @ToString.Exclude // we don't want to print passwords in here ...
     private final String password;
 
     @Bean
@@ -92,4 +96,11 @@ public class RabbitTemplateProvider {
         return log.exit(new Jackson2JsonMessageConverter());
     }
 
+
+    @Bean
+    public Queue userLogQueue(@Value("${queues.dcis.users.log:dcis.users.log}") final String queueName) {
+        log.entry(queueName);
+
+        return log.exit(new Queue(queueName, true));
+    }
 }

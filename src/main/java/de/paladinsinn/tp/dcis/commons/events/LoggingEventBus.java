@@ -20,7 +20,6 @@ package de.paladinsinn.tp.dcis.commons.events;
 
 
 import com.google.common.eventbus.*;
-import lombok.ToString;
 import lombok.extern.slf4j.XSlf4j;
 import org.springframework.lang.NonNull;
 
@@ -36,7 +35,6 @@ import static org.slf4j.ext.XLogger.Level.INFO;
  * @author klenkes74
  * @since 24.11.24
  */
-@ToString
 @XSlf4j
 public class LoggingEventBus extends EventBus {
   public LoggingEventBus() {
@@ -47,8 +45,9 @@ public class LoggingEventBus extends EventBus {
     log.exit();
   }
 
+  @SuppressWarnings("unused") // It is used by the EventBus
   @Subscribe
-  public void deadLetterReporter(DeadEvent event) {
+  public void deadLetterReporter(final DeadEvent event) {
     log.entry(event);
 
     log.error("Event has not been processed by any subscriber. event={}", event);

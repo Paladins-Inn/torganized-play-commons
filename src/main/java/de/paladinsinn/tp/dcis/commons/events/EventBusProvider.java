@@ -21,7 +21,6 @@ package de.paladinsinn.tp.dcis.commons.events;
 
 import com.google.common.eventbus.EventBus;
 import lombok.Getter;
-import lombok.ToString;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -35,8 +34,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  */
 @Configuration
 @Scope(SCOPE_SINGLETON)
-@ToString
 public class EventBusProvider {
   @Getter(onMethod = @__({@Bean}))
-  private final static EventBus bus = new LoggingEventBus();
+  private final static EventBus loggingEventBus = new LoggingEventBus();
 }

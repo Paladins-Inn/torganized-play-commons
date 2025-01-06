@@ -32,6 +32,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Documented
 @Import({
-        RabbitTemplateProvider.class
+        MessagingConfiguration.class,
+        EventSender.class
  })
 public @interface EnableMessagingConfiguration {}

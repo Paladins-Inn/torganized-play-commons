@@ -22,13 +22,18 @@ package de.paladinsinn.tp.dcis.commons.events;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.UUID;
 
 @SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @Getter
-@ToString()
+@ToString
 @EqualsAndHashCode(of = {"id"})
-public abstract class DcisBaseEvent {
+public abstract class DcisBaseEvent implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private final UUID id;
 }
