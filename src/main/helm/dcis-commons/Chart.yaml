@@ -7,5 +7,5 @@ version: 1.1.0
 dependencies:
 - name: microservice
   alias: commons
-  version: "2.1.6"
+  version: "2.2.0"
   repository: oci://quay.io/kaiserpfalzedv/helm

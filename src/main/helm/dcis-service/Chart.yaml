@@ -11,9 +11,9 @@ dependencies:
   repository: oci://quay.io/kaiserpfalzedv/helm
 - name: microservice
   alias: amqp
-  version: "2.1.1"
+  version: "2.1.6"
   repository: oci://quay.io/kaiserpfalzedv/helm
 - name: rabbitmq
   alias: messaging
-  version: "1.0.0"
+  version: "1.1.1"
   repository: oci://quay.io/kaiserpfalzedv/helm
