@@ -2,18 +2,18 @@ apiVersion: v2
 name: dcis-service
 description: A single SCS service with AMQP and HTTP pods running
 type: application
-version: 1.0.0
+version: 1.1.0
 
 dependencies:
 - name: microservice
   alias: http
-  version: "2.1.6"
+  version: "2.2.2"
   repository: oci://quay.io/kaiserpfalzedv/helm
 - name: microservice
   alias: amqp
-  version: "2.1.6"
+  version: "2.2.2"
   repository: oci://quay.io/kaiserpfalzedv/helm
 - name: rabbitmq
   alias: messaging
-  version: "1.1.1"
+  version: "1.1.3"
   repository: oci://quay.io/kaiserpfalzedv/helm
