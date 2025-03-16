@@ -21,10 +21,13 @@ package de.paladinsinn.tp.dcis.users.domain.events;
 
 import de.paladinsinn.tp.dcis.commons.events.DcisBaseEvent;
 import de.paladinsinn.tp.dcis.users.domain.model.User;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+
+import java.time.OffsetDateTime;
 
 
 /**
@@ -38,6 +41,9 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public abstract class UserBaseEvent extends DcisBaseEvent {
+  @Builder.Default
+  final OffsetDateTime timestamp = OffsetDateTime.now();
+  
   @ToString.Include
   final private User user;
 }
