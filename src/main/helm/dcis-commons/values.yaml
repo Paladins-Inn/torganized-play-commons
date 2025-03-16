@@ -65,6 +65,9 @@ services:
   path: /gaming
 - service: dcis-threats
   path: /threats
+- service: dcis-broker
+  path: /amqp
+  port: management
 
 ingress:
   enabled: true

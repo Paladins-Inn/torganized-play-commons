@@ -7,7 +7,7 @@ version: 1.0.0
 dependencies:
 - name: microservice
   alias: http
-  version: "2.1.1"
+  version: "2.1.6"
   repository: oci://quay.io/kaiserpfalzedv/helm
 - name: microservice
   alias: amqp
