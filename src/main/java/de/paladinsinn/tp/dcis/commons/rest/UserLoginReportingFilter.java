@@ -23,6 +23,7 @@ import com.google.common.eventbus.EventBus;
 import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
 import de.paladinsinn.tp.dcis.users.domain.model.User;
 import de.paladinsinn.tp.dcis.users.domain.model.UserImpl;
+import io.micrometer.core.annotation.Timed;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
@@ -64,6 +65,7 @@ public class UserLoginReportingFilter implements ApplicationListener<Authenticat
         log.exit();
     }
     
+    @Timed
     @Override
     public void onApplicationEvent(@Nonnull AuthenticationSuccessEvent event) {
         log.entry(event);

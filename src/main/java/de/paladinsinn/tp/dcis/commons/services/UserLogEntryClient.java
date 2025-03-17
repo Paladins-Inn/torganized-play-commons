@@ -24,6 +24,7 @@ import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
 import de.paladinsinn.tp.dcis.users.domain.model.User;
 import de.paladinsinn.tp.dcis.users.domain.model.UserLogEntry;
 import de.paladinsinn.tp.dcis.users.domain.model.UserLogEntryImpl;
+import io.micrometer.core.annotation.Timed;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
@@ -31,10 +32,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.XSlf4j;
 import org.springframework.amqp.core.Queue;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 /**
@@ -69,10 +74,17 @@ public class UserLogEntryClient {
   public void shutdown() {
     log.entry(service, bus, userLogQueue);
     bus.unregister(this);
+    
+    synchronized (lastLogin) {
+      log.trace("Clearing last login cache.");
+      lastLogin.clear();
+    }
+    
     log.exit();
   }
 
   @SuppressWarnings("unused") // It is used by the event bus
+  @Timed
   @Subscribe
   public void send(final UserLoginEvent event) {
     log.entry(userLogQueue, event);
@@ -88,6 +100,8 @@ public class UserLogEntryClient {
   }
   
   private UserLogEntry createUserLogEntry(UserLoginEvent event) {
+    log.entry(event);
+    
     return log.exit(
         UserLogEntryImpl.builder()
             .id(event.getId())
@@ -99,11 +113,36 @@ public class UserLogEntryClient {
   
   private boolean isAlreadyLoggedIn(User user) {
     log.entry(user);
+
+    boolean result;
     
-    boolean result = !lastLogin.containsKey(user)
-        || (lastLogin.containsKey(user) && lastLogin.get(user).isBefore(Instant.now().minusSeconds(3600)));
-    lastLogin.put(user, Instant.now());
+    synchronized (lastLogin) {
+      result = lastLogin.containsKey(user)
+          && lastLogin.get(user).isAfter(Instant.now().minusSeconds(3600));
+      
+      // reset user seen timestamp to now.
+      lastLogin.put(user, Instant.now());
+    }
     
     return log.exit(result);
+  }
+
+  @Timed
+  @Scheduled(initialDelay = 20, fixedDelay = 20, timeUnit = TimeUnit.MINUTES)
+  void purgeLoggedInUsers() {
+    log.entry();
+    
+    Map<User, Instant> result = lastLogin.entrySet().stream()
+        .filter((e) -> e.getValue().isBefore(Instant.now().minusSeconds(3600)))
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+    log.debug("Purging user login cache. old={}, new={}", lastLogin.size(), result.size());
+    
+    synchronized(lastLogin) {
+      lastLogin.clear();
+      lastLogin.putAll(result);
+    }
+    
+    log.exit();
   }
 }

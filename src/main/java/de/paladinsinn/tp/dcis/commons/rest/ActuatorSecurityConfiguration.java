@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -41,7 +42,8 @@ import lombok.RequiredArgsConstructor;
 
 
 @Configuration
-@EnableWebSecurity()
+@EnableWebSecurity
+@EnableScheduling
 @Order(1)
 @RequiredArgsConstructor
 @XSlf4j

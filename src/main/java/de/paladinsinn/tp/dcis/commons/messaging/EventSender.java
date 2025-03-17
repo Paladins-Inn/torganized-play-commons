@@ -19,6 +19,8 @@
 package de.paladinsinn.tp.dcis.commons.messaging;
 
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.XSlf4j;
@@ -54,7 +56,9 @@ import java.io.Serializable;
 @XSlf4j
 public class EventSender<T extends Serializable> {
   private final RabbitTemplate amqp;
-
+  
+  @Timed
+  @Counted(value = "counted.event.sender", description = "Sending an amqp message.")
   public void send(Queue queue, final T event) {
     log.entry(queue, event);
 
