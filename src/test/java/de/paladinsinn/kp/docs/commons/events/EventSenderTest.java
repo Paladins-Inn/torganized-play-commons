@@ -19,70 +19,138 @@
 package de.paladinsinn.kp.docs.commons.events;
 
 
-import de.paladinsinn.tp.dcis.commons.messaging.EventSender;
-import lombok.ToString;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.eventbus.EventBus;
+import de.paladinsinn.tp.dcis.commons.events.EnableEventBus;
+import de.paladinsinn.tp.dcis.commons.formatter.EnableKaiserpfalzCommonsSpringFormatters;
+import de.paladinsinn.tp.dcis.commons.services.EnableUserLogEntryClient;
+import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
+import de.paladinsinn.tp.dcis.users.domain.events.UserLogoutEvent;
+import de.paladinsinn.tp.dcis.users.domain.model.UserImpl;
 import lombok.extern.slf4j.XSlf4j;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAspectsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.stream.binder.test.EnableTestBinder;
+import org.springframework.cloud.stream.binder.test.OutputDestination;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.messaging.Message;
 
-import java.util.UUID;
+import java.io.IOException;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
+ * Tests the UserLogEntryClient.
+ *
+ * <p>The test ist done as integration test. It will send an {@link EventBus#post(Object)} for the user events and checks if it is handled by the spring cloud streaming service.</p>
+ *
  * @author klenkes74
- * @since 30.11.24
+ * @since 2025-03-23
  */
-@ExtendWith(SpringExtension.class)
-@ToString
+@SpringBootTest
+@EnableAutoConfiguration(exclude = {
+    MetricsAspectsAutoConfiguration.class,
+    MetricsAutoConfiguration.class,
+})
 @XSlf4j
 public class EventSenderTest {
-
+  
   @Autowired
-  private EventSender<TestEvent> sut;
-
+  private OutputDestination outputDestination;
+  
   @Autowired
-  private RabbitTemplate rabbitTemplate;
-
-  private final EventSenderTestContextConfiguration config = new EventSenderTestContextConfiguration();
-
-  @TestConfiguration
-  static class EventSenderTestContextConfiguration {
-    // FIXME 2025-01-06 rlichti MockBean is deprecated since spring-boot 3.4.0 and will be removed in 3.6.0
-    @MockBean
-    static RabbitTemplate rabbitTemplate;
-
-    @Bean
-    public RabbitTemplate rabbitTemplate() {
-      return rabbitTemplate;
-    }
-
-    @Bean
-    public EventSender<TestEvent> eventSender(RabbitTemplate rabbitTemplate) {
-      return new EventSender<>(rabbitTemplate);
-    }
-  }
-
+  private EventBus bus;
+  
+  @Value("${spring.application.name:Mary}")
+  private String application;
+  
+  @Autowired
+  private Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
+  
+  private static final String sinkName = "user-logs";
+  
   @Test
-  public void shouldSendTheEventWithAMessageAndQueue() {
-    Queue target = Mockito.mock(Queue.class);
-    TestEvent event = new TestEvent(UUID.randomUUID());
-    log.entry(target, event);
+  public void shouldSendTheEventWithAMessageAndQueue() throws IOException {
+    UserLoginEvent loginEvent = UserLoginEvent.builder()
+        .user(createDefaultUser())
+        .system(application)
+        .build();
+    log.entry(sinkName, loginEvent);
+    
+    bus.post(loginEvent);
 
-    sut.send(target, event);
-
-    verify(rabbitTemplate, times(1)).convertAndSend(target.getName(), event);
-
-    log.exit();
+    Message<byte[]> result = outputDestination.receive(1000L, sinkName);
+    UserLoginEvent received = getUserLoginEvent(result.getPayload());
+    log.trace("Received via stream: event={}", received);
+      
+    assertEquals(loginEvent, received);
+    assertEquals(loginEvent.getSystem(), received.getSystem());
+    assertEquals(loginEvent.getUser().getName(), received.getUser().getName());
+    assertEquals(loginEvent.getUser().getNameSpace(), received.getUser().getNameSpace());
+    
+    log.exit("success");
   }
+  
+  private static UserImpl createDefaultUser() {
+    return UserImpl.builder()
+        .name("Peter")
+        .nameSpace("Paul")
+        .build();
+  }
+  
+  private UserLoginEvent getUserLoginEvent(byte[] payload) throws IOException {
+    ObjectMapper mapper = jackson2ObjectMapperBuilder.build();
+    
+    return log.exit(mapper.readValue(payload, UserLoginEvent.class));
+  }
+  
+  
+  @Test
+  public void shouldSendTheLogoutEvent() throws IOException {
+    UserLogoutEvent logoutEvent = UserLogoutEvent.builder()
+        .user(createDefaultUser())
+        .system(application)
+        .build();
+    log.entry(sinkName, logoutEvent);
+    
+    bus.post(logoutEvent);
+    
+    Message<byte[]> result = outputDestination.receive(1000L, sinkName);
+    UserLogoutEvent received = getUserLogoutEvent(result.getPayload());
+    log.trace("Received via stream: event={}", received);
+    
+    assertEquals(logoutEvent, received);
+    assertEquals(logoutEvent.getSystem(), received.getSystem());
+    assertEquals(logoutEvent.getUser().getName(), received.getUser().getName());
+    assertEquals(logoutEvent.getUser().getNameSpace(), received.getUser().getNameSpace());
+    
+    log.exit("success");
+  }
+  
+  private UserLogoutEvent getUserLogoutEvent(byte[] payload) throws IOException {
+    ObjectMapper mapper = jackson2ObjectMapperBuilder.build();
+    
+    return log.exit(mapper.readValue(payload, UserLogoutEvent.class));
+  }
+  
+  
+  @SpringBootApplication(
+      scanBasePackages = {
+        "de.paladinsinn.tp.dcis.commons.events",
+        "de.paladinsinn.tp.dcis.commons.formatter",
+        "de.paladinsinn.tp.dcis.commons.services"
+      }
+  )
+  @EnableTestBinder
+  @EnableEventBus
+  @EnableUserLogEntryClient
+  @EnableKaiserpfalzCommonsSpringFormatters
+  public static class Application {}
 }

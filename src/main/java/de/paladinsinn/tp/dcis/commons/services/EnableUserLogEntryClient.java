@@ -15,8 +15,9 @@
  * License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-package de.paladinsinn.tp.dcis.commons.messaging;
+package de.paladinsinn.tp.dcis.commons.services;
 
+import de.paladinsinn.tp.dcis.commons.events.LoggingEventBus;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -28,11 +29,12 @@ import java.lang.annotation.*;
  * @version 1.0.0
  * @since 2024-09-27
  */
+@SuppressWarnings("unused")
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import({
-        MessagingConfiguration.class,
-        EventSender.class
+@Import({ 
+        UserLogEntryClient.class,
+        LoggingEventBus.class
  })
-public @interface EnableMessagingConfiguration {}
+public @interface EnableUserLogEntryClient {}

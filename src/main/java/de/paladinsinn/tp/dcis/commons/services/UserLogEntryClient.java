@@ -19,19 +19,17 @@ package de.paladinsinn.tp.dcis.commons.services;
 
 import com.google.common.eventbus.Subscribe;
 import de.paladinsinn.tp.dcis.commons.events.LoggingEventBus;
-import de.paladinsinn.tp.dcis.commons.messaging.EventSender;
 import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
+import de.paladinsinn.tp.dcis.users.domain.events.UserLogoutEvent;
 import de.paladinsinn.tp.dcis.users.domain.model.User;
-import de.paladinsinn.tp.dcis.users.domain.model.UserLogEntry;
-import de.paladinsinn.tp.dcis.users.domain.model.UserLogEntryImpl;
 import io.micrometer.core.annotation.Timed;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.XSlf4j;
-import org.springframework.amqp.core.Queue;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -53,26 +51,33 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 @XSlf4j
 public class UserLogEntryClient {
-  private final EventSender<UserLogEntry> service;
-  private final LoggingEventBus bus;
-  private final Queue userLogQueue;
-  
-  private final HashMap<User, Instant> lastLogin = new HashMap<>();
+  private static final String sinkName = "user-logs";
   
   @Value("${spring.application.name:unknown}")
   private String application;
 
+  /** The messaging infrastructure. */
+  private final StreamBridge streamBridge;
+  
+  /** The local event bus. */
+  private final LoggingEventBus bus;
+
+  /** The cache of logged in users. */
+  private final HashMap<User, Instant> lastLogin = new HashMap<>();
+
+  
   @PostConstruct
   public void init() {
-    log.entry(service, bus, userLogQueue);
+    log.entry(streamBridge, bus);
 
     bus.register(this);
     log.exit();
   }
 
+  
   @PreDestroy
   public void shutdown() {
-    log.entry(service, bus, userLogQueue);
+    log.entry(streamBridge, bus);
     bus.unregister(this);
     
     synchronized (lastLogin) {
@@ -83,32 +88,44 @@ public class UserLogEntryClient {
     log.exit();
   }
 
+  
   @SuppressWarnings("unused") // It is used by the event bus
   @Timed
   @Subscribe
   public void send(final UserLoginEvent event) {
-    log.entry(userLogQueue, event);
+    log.entry(streamBridge, event);
 
     if (!isAlreadyLoggedIn(event.getUser())) {
-      service.send(userLogQueue, createUserLogEntry(event));
-      log.info("User has been logged in. user={}", event.getUser());
+      // set application to event before sending it out.
+      streamBridge.send(sinkName, event.toBuilder().system(application).build());
+  
+      log.info("User login has been reported to central logger. user={}, application={}", event.getUser(), application);
     } else {
-      log.info("User has been logged in during the last hour. Ignoring this login event. user={}", event.getUser());
+      log.info("User has been logged in during the last hour. Ignoring this login event. user={}, application={}", event.getUser(), application);
     }
 
     log.exit();
   }
   
-  private UserLogEntry createUserLogEntry(UserLoginEvent event) {
-    log.entry(event);
+  @SuppressWarnings("unused") // It is used by the event bus
+  @Timed
+  @Subscribe
+  public void send(final UserLogoutEvent event) {
+    log.entry(streamBridge, event);
     
-    return log.exit(
-        UserLogEntryImpl.builder()
-            .id(event.getId())
-            .system(application)
-            .text("User logged in. namespace=" + event.getUser().getNameSpace() + ", name=" + event.getUser().getName())
-            .build()
-    );
+    if (isAlreadyLoggedIn(event.getUser())) {
+      log.info("User is not logged in. Ignoring this logout event. user={}, application={}", event.getUser(), application);
+    } else {
+      streamBridge.send(sinkName, event.toBuilder().system(application).build());
+      
+      synchronized (lastLogin) {
+        lastLogin.remove(event.getUser());
+      }
+      
+      log.info("User logout has been reported to central logger. user={}, application={}", event.getUser(), application);
+    }
+    
+    log.exit();
   }
   
   private boolean isAlreadyLoggedIn(User user) {
@@ -120,8 +137,10 @@ public class UserLogEntryClient {
       result = lastLogin.containsKey(user)
           && lastLogin.get(user).isAfter(Instant.now().minusSeconds(3600));
       
-      // reset user seen timestamp to now.
-      lastLogin.put(user, Instant.now());
+      if (result) {
+        // reset user seen timestamp to now.
+        lastLogin.put(user, Instant.now());
+      }
     }
     
     return log.exit(result);
@@ -132,16 +151,22 @@ public class UserLogEntryClient {
   void purgeLoggedInUsers() {
     log.entry();
     
-    Map<User, Instant> result = lastLogin.entrySet().stream()
-        .filter((e) -> e.getValue().isBefore(Instant.now().minusSeconds(3600)))
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-    log.debug("Purging user login cache. old={}, new={}", lastLogin.size(), result.size());
+    int oldSize;
     
     synchronized(lastLogin) {
-      lastLogin.clear();
-      lastLogin.putAll(result);
+      oldSize = lastLogin.size();
+      
+      Map<User, Instant> result = lastLogin.entrySet().stream()
+          .filter((e) -> e.getValue().isBefore(Instant.now().minusSeconds(3600)))
+          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+      
+      result.forEach((user, instant) -> {
+        log.info("User locally logged out due to inactivity. user={}", user);
+        lastLogin.remove(user);
+      });
     }
+
+    log.debug("Purging user login cache. old={}, new={}", oldSize, lastLogin.size());
     
     log.exit();
   }

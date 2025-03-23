@@ -43,6 +43,7 @@ public class UserImpl implements User {
     private OffsetDateTime modified;
     private OffsetDateTime deleted;
 
-    private String nameSpace;
+    @Builder.Default
+    private String nameSpace = "./";
     private String name;
 }

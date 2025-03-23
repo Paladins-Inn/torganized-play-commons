@@ -1,0 +1,65 @@
+---
+spring:
+  application:
+    name: dcis-commons
+    admin:
+      enabled: false
+  main:
+    banner-mode: off
+
+  cloud:
+    stream:
+      # noinspection SpringBootApplicationYaml
+      bindings:
+        input:
+          user-logs:
+            destination: dcis.user.log
+            content-type: application/json
+        output:
+          user-logs:
+            destination: dcis.user.log
+            content-type: application/json
+      binders:
+        broker:
+          type: rabbit
+      # noinspection SpringBootApplicationYaml
+      default-binder: broker
+
+  jackson:
+    serialization:
+      indent_output: true
+      write-null-map-values: false
+      fail-on-empty-beans: true
+      order-map-entries-by-keys: true
+      write-dates-with-zone-id: true
+      write-enums-using-to-string: true
+      write-empty-json-arrays: true
+      write-bigdecimal-as-plain: true
+      close-closeable: true
+
+  datasource:
+    hikari:
+      connectionTimeout: 20000
+      maximumPoolSize: 5
+
+  jpa:
+    showSql: false
+    hibernate:
+      ddlAuto: validate
+
+logging:
+  group:
+    rest: de.paladinsinn.tp.dcis.api,org.springframework.web,org.springframework.http
+  level:
+    web: WARN
+    security: WARN
+    rest: WARN
+    liquibase: WARN
+    de:
+      kaiserpfalzedv: INFO
+      paladinsinn: TRACE
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: INFO

@@ -19,7 +19,6 @@
 package de.paladinsinn.kp.docs.commons.configuration;
 
 import de.paladinsinn.tp.dcis.commons.events.EnableEventBus;
-import de.paladinsinn.tp.dcis.commons.messaging.EnableMessagingConfiguration;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -33,7 +32,6 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootApplication
 @EnableEventBus
-@EnableMessagingConfiguration
 public class MessagingApplication extends SpringApplication {
     @Value("${spring.application.name:PLAYERS}")
     @Getter(onMethod = @__(@Bean))

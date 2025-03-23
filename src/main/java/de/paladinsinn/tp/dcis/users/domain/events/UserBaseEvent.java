@@ -45,5 +45,8 @@ public abstract class UserBaseEvent extends DcisBaseEvent {
   final OffsetDateTime timestamp = OffsetDateTime.now();
   
   @ToString.Include
+  final private String system;
+  
+  @ToString.Include
   final private User user;
 }
