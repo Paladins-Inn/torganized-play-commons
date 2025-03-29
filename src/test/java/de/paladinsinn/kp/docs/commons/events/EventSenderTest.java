@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import de.paladinsinn.tp.dcis.commons.events.EnableEventBus;
 import de.paladinsinn.tp.dcis.commons.formatter.EnableKaiserpfalzCommonsSpringFormatters;
-import de.paladinsinn.tp.dcis.commons.services.EnableUserLogEntryClient;
+import de.paladinsinn.tp.dcis.users.domain.services.EnableUserLogEntryClient;
 import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
 import de.paladinsinn.tp.dcis.users.domain.events.UserLogoutEvent;
 import de.paladinsinn.tp.dcis.users.domain.model.UserImpl;
@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
- * Tests the UserLogEntryClient.
+ * Tests the UserLogEntrySender.
  *
  * <p>The test ist done as integration test. It will send an {@link EventBus#post(Object)} for the user events and checks if it is handled by the spring cloud streaming service.</p>
  *
@@ -55,6 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @since 2025-03-23
  */
 @SpringBootTest
+@EnableUserLogEntryClient
 @EnableAutoConfiguration(exclude = {
     MetricsAspectsAutoConfiguration.class,
     MetricsAutoConfiguration.class,
@@ -88,7 +89,8 @@ public class EventSenderTest {
 
     Message<byte[]> result = outputDestination.receive(1000L, sinkName);
     UserLoginEvent received = getUserLoginEvent(result.getPayload());
-    log.trace("Received via stream: event={}", received);
+      //noinspection LoggingSimilarMessage
+      log.trace("Received via stream: event={}", received);
       
     assertEquals(loginEvent, received);
     assertEquals(loginEvent.getSystem(), received.getSystem());
@@ -124,7 +126,8 @@ public class EventSenderTest {
     
     Message<byte[]> result = outputDestination.receive(1000L, sinkName);
     UserLogoutEvent received = getUserLogoutEvent(result.getPayload());
-    log.trace("Received via stream: event={}", received);
+      //noinspection LoggingSimilarMessage
+      log.trace("Received via stream: event={}", received);
     
     assertEquals(logoutEvent, received);
     assertEquals(logoutEvent.getSystem(), received.getSystem());

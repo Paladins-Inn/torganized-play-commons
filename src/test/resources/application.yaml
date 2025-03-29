@@ -12,18 +12,17 @@ spring:
       # noinspection SpringBootApplicationYaml
       bindings:
         input:
-          user-logs:
-            destination: dcis.user.log
-            content-type: application/json
+          destination: dcis.user.log
+          content-type: application/json
+          consumer:
+            use-native-decoding: false
+            auto-startup: true
         output:
-          user-logs:
-            destination: dcis.user.log
-            content-type: application/json
-      binders:
-        broker:
-          type: rabbit
-      # noinspection SpringBootApplicationYaml
-      default-binder: broker
+          destination: dcis.user.log
+          content-type: application/json
+          producer:
+            use-native-encoding: false
+            auto-startup: true
 
   jackson:
     serialization:
@@ -46,6 +45,13 @@ spring:
     showSql: false
     hibernate:
       ddlAuto: validate
+
+management:
+  health:
+    binders:
+      enabled: false
+    rabbit:
+      enabled: false
 
 logging:
   group:
