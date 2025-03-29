@@ -28,6 +28,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -108,6 +110,16 @@ public class UserLoggedInStateRepository {
   }
   
   @Timed
+  public void login(final User user, final Instant lastLoginTime) {
+    log.entry(user, lastLoginTime);
+    
+    synchronized (lastLogin) {
+      lastLogin.put(user, lastLoginTime);
+    }
+    log.debug("User is logged in with specified login time. user={}, loginTime={}", user, OffsetDateTime.from(lastLoginTime.atZone(ZoneId.systemDefault())));
+  }
+  
+  @Timed
   public void logout(final User user) {
     log.entry(user);
     
@@ -121,7 +133,7 @@ public class UserLoggedInStateRepository {
   
   @Timed
   @Scheduled(initialDelay = 20, fixedDelay = 20, timeUnit = TimeUnit.MINUTES)
-  public void purgeLoggedInUsers() {
+  public void purgeInactiveUsers() {
     log.entry();
     
     int oldSize;
@@ -142,5 +154,12 @@ public class UserLoggedInStateRepository {
     log.debug("Purging user login cache. old={}, new={}", oldSize, lastLogin.size());
     
     log.exit();
+  }
+  
+  public void purgeAllUsers() {
+    synchronized (lastLogin) {
+      lastLogin.clear();
+      log.warn("Purged all users from cache.");
+    }
   }
 }
