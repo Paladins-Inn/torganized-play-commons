@@ -12,17 +12,19 @@ spring:
       # noinspection SpringBootApplicationYaml
       bindings:
         input:
-          destination: dcis.user.log
-          content-type: application/json
-          consumer:
-            use-native-decoding: false
-            auto-startup: true
+          user-log:
+            destination: dcis.user.log
+            content-type: application/json
+            consumer:
+              use-native-decoding: false
+              auto-startup: true
         output:
-          destination: dcis.user.log
-          content-type: application/json
-          producer:
-            use-native-encoding: false
-            auto-startup: true
+          user-log:
+            destination: dcis.user.log
+            content-type: application/json
+            producer:
+              use-native-encoding: false
+              auto-startup: true
 
   jackson:
     serialization:

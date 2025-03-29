@@ -73,7 +73,6 @@ public class UserLogEntryClient {
             log.debug("User is already logged in. user={}", event.getUser());
         } else {
             sender.send(event);
-            log.debug("User is now logged in. user={}", event.getUser());
         }
         userState.login(event.getUser());
         
@@ -85,13 +84,8 @@ public class UserLogEntryClient {
     public void on(final UserLogoutEvent event) {
         log.entry(event);
         
-        if (userState.isLoggedIn(event.getUser())) {
-            sender.send(event);
-            userState.logout(event.getUser());
-            log.debug("User is logged out. user={}", event.getUser());
-        } else {
-            log.debug("User is not logged in. user={}", event.getUser());
-        }
+        sender.send(event);
+        userState.logout(event.getUser());
         
         log.exit();
     }
