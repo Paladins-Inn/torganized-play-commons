@@ -18,7 +18,9 @@
 
 package de.paladinsinn.tp.dcis.users.domain.model;
 
+import java.time.Clock;
 import java.time.OffsetDateTime;
+import java.time.Period;
 import java.util.UUID;
 
 import lombok.AccessLevel;
@@ -35,15 +37,21 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-@ToString()
+@ToString(of = {"id", "nameSpace", "name", "created", "modified", "detainedTill", "banned"})
 @EqualsAndHashCode(of = {"id"})
 public class UserImpl implements User {
     private UUID id;
-    private OffsetDateTime created;
+    @Builder.Default
+    private OffsetDateTime created = OffsetDateTime.now(Clock.systemUTC());
     private OffsetDateTime modified;
     private OffsetDateTime deleted;
+    
+    private Period detainedPeriod;
+    private OffsetDateTime detainedTill;
+    
+    private boolean banned;
 
     @Builder.Default
-    private String nameSpace = "./";
+    private String nameSpace = "./.";
     private String name;
 }

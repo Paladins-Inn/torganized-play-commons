@@ -14,4 +14,6 @@ public interface UserLogEntry extends HasId<UUID>, HasTimestamps, Serializable {
 
     String getSystem();
     String getText();
+    
+    String getComment();
 }

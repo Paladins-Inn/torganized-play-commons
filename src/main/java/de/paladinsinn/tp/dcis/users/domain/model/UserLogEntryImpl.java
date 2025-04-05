@@ -33,4 +33,5 @@ public class UserLogEntryImpl implements UserLogEntry {
 
     private String system;
     private String text;
+    private String comment;
 }
