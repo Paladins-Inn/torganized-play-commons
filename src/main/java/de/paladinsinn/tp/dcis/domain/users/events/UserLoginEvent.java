@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) 2024-2025. Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,7 +16,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.users.domain.events;
+package de.paladinsinn.tp.dcis.domain.users.events;
 
 
 import lombok.EqualsAndHashCode;

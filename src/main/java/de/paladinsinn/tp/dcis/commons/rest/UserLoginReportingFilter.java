@@ -20,9 +20,9 @@ package de.paladinsinn.tp.dcis.commons.rest;
 
 
 import com.google.common.eventbus.EventBus;
-import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
-import de.paladinsinn.tp.dcis.users.domain.model.User;
-import de.paladinsinn.tp.dcis.users.domain.model.UserImpl;
+import de.paladinsinn.tp.dcis.domain.users.events.UserLoginEvent;
+import de.paladinsinn.tp.dcis.domain.users.model.User;
+import de.paladinsinn.tp.dcis.domain.users.model.UserImpl;
 import io.micrometer.core.annotation.Timed;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;

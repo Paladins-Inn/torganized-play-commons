@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) 2025. Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,25 +16,22 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.users.domain.events;
+package de.paladinsinn.tp.dcis.domain.users.model;
 
+import java.io.Serializable;
+import java.util.UUID;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
-import lombok.extern.jackson.Jacksonized;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import de.kaiserpfalzedv.commons.api.resources.HasId;
+import de.kaiserpfalzedv.commons.api.resources.HasTimestamps;
 
-/**
- * The event sent when a user gets removed from the system.
- *
- * @author klenkes74
- * @since 09.11.24
- */
-@Jacksonized
-@SuperBuilder(toBuilder = true)
-@Getter
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
-public class UserRemovedEvent extends UserBaseEvent {}
+@JsonDeserialize(as = UserLogEntryImpl.class)
+public interface UserLogEntry extends HasId<UUID>, HasTimestamps, Serializable {
+    User getUser();
+
+    String getSystem();
+    String getText();
+    
+    String getComment();
+}

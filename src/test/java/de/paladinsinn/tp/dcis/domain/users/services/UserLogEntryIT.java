@@ -1,32 +1,32 @@
 /*
  * Copyright (c) 2024-2025. Kaiserpfalz EDV-Service, Roland T. Lichti
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 3 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or  (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- *   You should have received a copy of the GNU Lesser General Public License
- *  along with this program; if not, write to the Free Software Foundation,
- *  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program.
+ * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.users.domain.services;
+package de.paladinsinn.tp.dcis.domain.users.services;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import de.paladinsinn.tp.dcis.commons.events.EnableEventBus;
 import de.paladinsinn.tp.dcis.commons.formatter.EnableKaiserpfalzCommonsSpringFormatters;
-import de.paladinsinn.tp.dcis.users.domain.events.UserLoginEvent;
-import de.paladinsinn.tp.dcis.users.domain.events.UserLogoutEvent;
-import de.paladinsinn.tp.dcis.users.domain.model.User;
-import de.paladinsinn.tp.dcis.users.domain.model.UserImpl;
+import de.paladinsinn.tp.dcis.domain.users.events.UserLoginEvent;
+import de.paladinsinn.tp.dcis.domain.users.events.UserLogoutEvent;
+import de.paladinsinn.tp.dcis.domain.users.model.User;
+import de.paladinsinn.tp.dcis.domain.users.model.UserImpl;
 import lombok.extern.slf4j.XSlf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,7 +188,7 @@ public class UserLogEntryIT {
       scanBasePackages = {
         "de.paladinsinn.tp.dcis.commons.events",
         "de.paladinsinn.tp.dcis.commons.formatter",
-        "de.paladinsinn.tp.dcis.commons.services"
+        "de.paladinsinn.tp.dcis.domain.users.services"
       }
   )
   @EnableTestBinder

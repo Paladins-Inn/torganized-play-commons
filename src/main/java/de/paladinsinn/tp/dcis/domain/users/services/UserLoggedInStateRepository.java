@@ -1,23 +1,23 @@
 /*
  * Copyright (c) 2024-2025. Kaiserpfalz EDV-Service, Roland T. Lichti
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 3 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or  (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- *   You should have received a copy of the GNU Lesser General Public License
- *  along with this program; if not, write to the Free Software Foundation,
- *  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program.
+ * If not, see <https://www.gnu.org/licenses/>.
  */
-package de.paladinsinn.tp.dcis.users.domain.services;
+package de.paladinsinn.tp.dcis.domain.users.services;
 
-import de.paladinsinn.tp.dcis.users.domain.model.User;
+import de.paladinsinn.tp.dcis.domain.users.model.User;
 import io.micrometer.core.annotation.Timed;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -146,7 +146,7 @@ public class UserLoggedInStateRepository {
           .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
       
       result.forEach((user, instant) -> {
-        log.info("User locally logged out due to inactivity. user={}", user);
+        log.info("User locally logged out due to inactivity. user={}, lastActivity={}", user, OffsetDateTime.ofInstant(instant, ZoneId.of("UTC")));
         lastLogin.remove(user);
       });
     }

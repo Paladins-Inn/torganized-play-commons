@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) 2024-2025. Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,7 +16,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.users.domain.model;
+package de.paladinsinn.tp.dcis.domain.users.model;
 
 import java.time.*;
 import java.util.UUID;
@@ -36,7 +36,7 @@ import lombok.extern.slf4j.XSlf4j;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-@ToString(of = {"id", "nameSpace", "name", "created", "modified", "detainedTill", "detainmentDuration", "banned"})
+@ToString(of = {"id", "nameSpace", "name", "created", "modified"})
 @EqualsAndHashCode(of = {"id"})
 @XSlf4j
 public class UserImpl implements User {
@@ -89,6 +89,24 @@ public class UserImpl implements User {
         log.entry();
         
         this.banned = false;
+        
+        log.exit();
+    }
+    
+    @Override
+    public void delete() {
+        log.entry();
+        
+        this.deleted = OffsetDateTime.now(Clock.systemUTC());
+        
+        log.exit(deleted);
+    }
+    
+    @Override
+    public void undelete() {
+        log.entry();
+        
+        this.deleted = null;
         
         log.exit();
     }
