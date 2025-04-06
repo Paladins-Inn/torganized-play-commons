@@ -18,8 +18,8 @@
 
 package de.paladinsinn.tp.dcis.users.domain.model;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.time.Period;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -37,12 +37,15 @@ public interface User extends HasId<UUID>, HasNameSpace, HasName, HasTimestamps 
     /**
      * @return The period the user has been detained for.
      */
-    Period getDetainedPeriod();
+    Duration getDetainmentDuration();
     
     /**
      * @return The end of the user detainment.
      */
     OffsetDateTime getDetainedTill();
     
+    /**
+     * @return true if the user is banned from the system.
+     */
     boolean isBanned();
 }
