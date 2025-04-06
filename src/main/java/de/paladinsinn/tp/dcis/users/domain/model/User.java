@@ -45,7 +45,49 @@ public interface User extends HasId<UUID>, HasNameSpace, HasName, HasTimestamps 
     OffsetDateTime getDetainedTill();
     
     /**
+     * Detains the user for a number of days.
+     * @param days The number of days the user is detained within the system.
+     */
+    void detain(long days);
+    
+    /**
+     * Release the user from detainment.
+     */
+    void release();
+    
+    /**
+     * Ban the user from the system.
+     */
+    void ban();
+    
+    /**
+     * Unban the user from the system.
+     */
+    void unban();
+    
+    /**
      * @return true if the user is banned from the system.
      */
     boolean isBanned();
+    
+    /**
+     * @return true if the user is detained.
+     */
+   default boolean isDetained() {
+       return getDetainedTill() != null;
+   }
+    
+    /**
+     * @return true if the user is deleted.
+     */
+    default boolean isDeleted() {
+        return getDetainedTill() == null;
+    }
+    
+    /**
+     * @return true if the user is inactive for any reason.
+     */
+    default boolean isInactive() {
+        return isDeleted() || isBanned() || isDetained();
+    }
 }
