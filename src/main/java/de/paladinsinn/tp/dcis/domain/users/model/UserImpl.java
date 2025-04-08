@@ -21,6 +21,8 @@ package de.paladinsinn.tp.dcis.domain.users.model;
 import java.time.*;
 import java.util.UUID;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,11 +58,15 @@ public class UserImpl implements User {
     private String name;
     
     @Override
-    public void detain(long days) {
+    public void detain(@Min(1) @Max(1095) long days) {
         log.entry(days);
         
         detainmentDuration = Duration.ofDays(days);
-        detainedTill = ZonedDateTime.now(ZoneId.of("UTC")).plusDays(days).toOffsetDateTime();
+        
+        detainedTill = LocalDate.now()
+            .atStartOfDay(ZoneId.of("UTC"))
+            .plusDays(1 + days) // today end of day (1) + days
+            .toOffsetDateTime();
         
         log.exit(detainedTill);
     }
