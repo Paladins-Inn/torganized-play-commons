@@ -18,6 +18,7 @@
 package de.paladinsinn.tp.dcis.commons.rest;
 
 import de.paladinsinn.tp.dcis.commons.ui.UserLoginReportingFilter;
+import de.paladinsinn.tp.dcis.commons.ui.WebUiModelDefaultValueSetter;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -40,6 +41,7 @@ import java.lang.annotation.*;
         RestTemplateProvider.class,
         WebI18nConfiguration.class,
         FilterRegistrations.class,
-        UserLoginReportingFilter.class
+        UserLoginReportingFilter.class,
+        WebUiModelDefaultValueSetter.class
  })
 public @interface EnableRestConfiguration {}
