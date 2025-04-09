@@ -17,6 +17,7 @@
  */
 package de.paladinsinn.tp.dcis.commons.rest;
 
+import de.paladinsinn.tp.dcis.commons.ui.UserLoginReportingFilter;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
