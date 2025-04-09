@@ -19,6 +19,7 @@
 package de.paladinsinn.tp.dcis.commons.ui;
 
 
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
@@ -33,6 +34,7 @@ import org.springframework.ui.Model;
  * @since 09.04.25
  */
 @Service
+@XSlf4j
 public class WebUiModelDefaultValueSetter {
   
   @Value("${server.servlet.contextPath}:/scs")
@@ -47,10 +49,20 @@ public class WebUiModelDefaultValueSetter {
    * @return The result string.
    */
   public String addContextPath(final String result, final Authentication authentication, Model model) {
+    log.entry(result, authentication, model);
+    
     model.addAttribute("id", ((DefaultOidcUser)authentication.getPrincipal()).getSubject());
     model.addAttribute("name", authentication.getName());
     model.addAttribute("contextPath", contextPath);
-    return result;
+    
+    return log.exit(result);
   }
   
+  public String fullUrl(final String url) {
+    log.entry(url);
+    
+    String result = contextPath + (url.startsWith("/") ? "" : "/") + url;
+    
+    return log.exit(result);
+  }
 }
