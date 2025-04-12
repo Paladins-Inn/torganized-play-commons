@@ -37,21 +37,12 @@ spring:
       write-empty-json-arrays: true
       write-bigdecimal-as-plain: true
       close-closeable: true
-      
-  liquibase:
-    enabled: true
-    show-summary-output: log
-    show-summary: summary
-    change-log: classpath:/db/changelog/db.changelog-master.yaml
-    url: jdbc:h2:file:./target/db;MODE=PostgreSQL
-    user: sa
-    password: password
   
   datasource:
     name: in-memory
-    url: jdbc:h2:file:./target/db;MODE=PostgreSQL
-    username: sa
-    password: password
+    url: &dburl jdbc:h2:file:./target/db;MODE=PostgreSQL
+    username: &dbusername sa
+    password: &dbpassword password
     hikari:
       connectionTimeout: 20000
       maximumPoolSize: 5
@@ -60,6 +51,16 @@ spring:
     showSql: false
     hibernate:
       ddlAuto: validate
+  
+  liquibase:
+    enabled: true
+    show-summary-output: log
+    show-summary: summary
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    url: *dburl
+    user: *dbusername
+    password: *dbpassword
+
 
 management:
   health:

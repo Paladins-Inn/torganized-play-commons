@@ -165,7 +165,7 @@ public class UserLoggedinStateRepositoryTest {
   )
   @EnableTestBinder
   @EnableEventBus
-  @EnableUserLogEntryClient
+  @EnableUserManagement
   @EnableKaiserpfalzCommonsSpringFormatters
   public static class Application {}
 }

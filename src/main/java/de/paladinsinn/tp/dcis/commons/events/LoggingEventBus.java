@@ -19,9 +19,13 @@
 package de.paladinsinn.tp.dcis.commons.events;
 
 
-import com.google.common.eventbus.*;
+import com.google.common.eventbus.DeadEvent;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.XSlf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.annotation.Order;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +41,9 @@ import static org.slf4j.ext.XLogger.Level.INFO;
  * @author klenkes74
  * @since 24.11.24
  */
+@Primary
 @Service
+@Order(1000)
 @Scope("singleton")
 @XSlf4j
 public class LoggingEventBus extends EventBus {

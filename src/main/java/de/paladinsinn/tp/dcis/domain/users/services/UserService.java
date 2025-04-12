@@ -18,33 +18,29 @@
 
 package de.paladinsinn.tp.dcis.domain.users.services;
 
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.UUID;
-
-import de.paladinsinn.tp.dcis.commons.events.LoggingEventBus;
-import de.paladinsinn.tp.dcis.domain.users.events.arbitation.UserBannedEvent;
-import de.paladinsinn.tp.dcis.domain.users.events.arbitation.UserDetainedEvent;
-import de.paladinsinn.tp.dcis.domain.users.events.arbitation.UserReleasedEvent;
-import de.paladinsinn.tp.dcis.domain.users.events.state.UserCreatedEvent;
-import de.paladinsinn.tp.dcis.domain.users.events.state.UserRemovedEvent;
+import de.paladinsinn.tp.dcis.commons.events.FakeEventBus;
+import de.paladinsinn.tp.dcis.domain.users.model.User;
 import de.paladinsinn.tp.dcis.domain.users.model.UserToImpl;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import lombok.*;
+import de.paladinsinn.tp.dcis.domain.users.persistence.UserJPA;
+import de.paladinsinn.tp.dcis.domain.users.persistence.UserRepository;
+import de.paladinsinn.tp.dcis.domain.users.persistence.UserToJpa;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.XSlf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import de.paladinsinn.tp.dcis.domain.users.model.User;
-import de.paladinsinn.tp.dcis.domain.users.model.UserImpl;
-import de.paladinsinn.tp.dcis.domain.users.persistence.UserJPA;
-import de.paladinsinn.tp.dcis.domain.users.persistence.UserRepository;
-import de.paladinsinn.tp.dcis.domain.users.persistence.UserToJpa;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -52,60 +48,58 @@ import de.paladinsinn.tp.dcis.domain.users.persistence.UserToJpa;
 @XSlf4j
 public class UserService {
     private final UserRepository userRepository;
-    private final LoggingEventBus bus;
-
+    
+    private final FakeEventBus fakeBus;
     private final UserToImpl toUser;
     private final UserToJpa toUserJPA;
 
-    @Value("${spring.application.name:DCIS")
-    @Setter(AccessLevel.PACKAGE)
-    private String applicationName;
-    
     @Getter
     @Setter
     private Authentication authentication;
-    
-    @PostConstruct
-    public void init() {
-        log.entry(applicationName, bus);
-        bus.register(this);
-        log.exit();
-    }
-    
-    @PreDestroy
-    public void destroy() {
-        log.entry(applicationName, bus);
-        bus.unregister(this);
-        log.exit();
-    }
 
+    
+    @Counted
+    @Timed
     public User createUser(final User player) {
         log.entry(player, authentication);
 
-        User result = userRepository.save(toUserJPA.apply(player));
-        
-        bus.post(UserCreatedEvent.builder()
-                .user(result)
-                .system(applicationName)
-                .build()
-        );
-
-        return log.exit(result);
-    }
-
-    public User createUser(final UUID uid, final String nameSpace, final String name) {
-        log.entry(uid, nameSpace, name, authentication);
-        
-        User result = createUser(UserImpl.builder()
-                .id(uid)
-                .nameSpace(nameSpace)
-                .name(name)
-                .build()
-        );
+        UserJPA result = userRepository.save(toUserJPA.apply(player));
         
         return log.exit(result);
     }
-
+    
+    @Counted
+    @Timed
+    public void activateUser(final User user) {
+        log.entry(user);
+        
+        Optional<User> data = loadUserByIdOrNamespaceAndName(user);
+        data.ifPresent(u -> {
+            u.getState(fakeBus).activate();
+            userRepository.save(toUserJPA.apply(u));
+        });
+        
+        log.exit();
+    }
+    
+    @Counted
+    @Timed
+    private Optional<User> loadUserByIdOrNamespaceAndName(final User query) {
+        log.entry(query);
+        
+        Optional<User> result;
+        
+        if (query.getId() != null) {
+            result = retrieveUser(query.getId());
+        } else {
+            result = retrieveUser(query.getNameSpace(), query.getName());
+        }
+        
+        return log.exit(result);
+    }
+    
+    @Counted
+    @Timed
     public Optional<User> retrieveUser(final UUID uid) {
         log.entry(uid, authentication);
 
@@ -116,6 +110,8 @@ public class UserService {
         return Optional.of(log.exit(result.orElse(null)));
     }
     
+    @Counted
+    @Timed
     public Optional<User> retrieveUser(final String nameSpace, final String name) {
         log.entry(nameSpace, name, authentication);
         
@@ -125,7 +121,31 @@ public class UserService {
         
         return Optional.of(log.exit(result.orElse(null)));
     }
-
+    
+    @Counted
+    @Timed
+    public List<User> retrieveUsers() {
+        log.entry();
+        
+        List<UserJPA> data = userRepository.findAll();
+        List<User> result = data.stream().map(e -> (User) toUser.apply(e)).toList();
+        
+        return log.exit(result);
+    }
+    
+    @Counted
+    @Timed
+    public List<User> retrieveUsers(final String namespace) {
+        log.entry(namespace);
+        
+        List<UserJPA> data = userRepository.findByNameSpace(namespace);
+        List<User> result = data.stream().map(e -> (User) toUser.apply(e)).toList();
+        
+        return log.exit(result);
+    }
+    
+    @Counted
+    @Timed
     public Page<User> retrieveUsers(final String nameSpace, final Pageable pageable) {
         log.entry(nameSpace, pageable, authentication);
 
@@ -138,6 +158,8 @@ public class UserService {
         return log.exit(result);
     }
     
+    @Counted
+    @Timed
     public User updateUser(final UUID uid, final User user) {
         log.entry(uid, user, authentication);
         
@@ -145,56 +167,68 @@ public class UserService {
         
         Optional<User> data = retrieveUser(uid);
         
-        data.ifPresent(value -> bus.post(UserRemovedEvent.builder().user(value).build()));
-        
-        return log.exit(data.orElse(user));
+        return log.exit(data.orElse(toUserJPA.apply(user)));
     }
     
-    public void deleteUser(final UUID uid) {
-        log.entry(uid, authentication);
+    @Counted
+    @Timed
+    public void deleteUser(final User user) {
+        log.entry(user, authentication);
         
-        log.info("Deleting user not implemented yet. uid={}, authentication={}", uid, authentication);
-        
-        Optional<User> data = retrieveUser(uid);
-        
-        data.ifPresent(value -> bus.post(UserBannedEvent.builder().user(value).build()));
+        log.error("Deleting user not implemented yet. user={}, authentication={}", user, authentication);
         
         log.exit();
     }
     
-    public Optional<User> detainUser(final UUID uid, final long ttl) {
-        log.entry(uid, authentication);
+    @Counted
+    @Timed
+    public void removeUser(final User user) {
+        log.entry(user, authentication);
         
-        Optional<UserJPA> data = userRepository.findById(uid);
+        log.error("Removing user is not implemented yet. user={}, authentication={}", user, authentication);
         
-        if (data.isEmpty()) {
-            log.warn("User can't be detained. User not found. uid={}", uid);
-            
-            return log.exit(Optional.empty());
-        }
-
-        data.get().detain(ttl);
-        
-        UserJPA result = userRepository.save(data.get());
-        bus.post(UserDetainedEvent.builder().user(result).build());
-
-        return log.exit(Optional.of(result));
+        log.exit();
     }
     
-    public Optional<User> releaseUser(final UUID uid) {
-        log.entry(uid, authentication);
+    @Counted
+    @Timed
+    public void detainUser(final User user, final long ttl) {
+        log.entry(user, ttl, authentication);
         
-        Optional<UserJPA> data = userRepository.findById(uid);
-        if (data.isEmpty()) {
-            log.warn("User can't be released. User not found. uid={}", uid);
-            return log.exit(Optional.empty());
-        }
+        Optional<User> data = loadUserByIdOrNamespaceAndName(user);
+        data.ifPresent(u -> {
+            u.getState(fakeBus).detain(ttl);
+            userRepository.save(toUserJPA.apply(u));
+        });
         
-        data.get().release();
+        log.exit(data);
+    }
+    
+    @Counted
+    @Timed
+    public void banUser(final User user) {
+        log.entry(user, authentication);
         
-        UserJPA result = userRepository.save(data.get());
-        bus.post(UserReleasedEvent.builder().user(result).build());
+        Optional<User> data = loadUserByIdOrNamespaceAndName(user);
+        data.ifPresent(u -> {
+            u.getState(fakeBus).ban();
+            userRepository.save(toUserJPA.apply(u));
+        });
         
-        return log.exit(Optional.of(result));
+        log.exit(data);
+    }
+    
+    @Counted
+    @Timed
+    public void releaseUser(final User user) {
+        log.entry(user, authentication);
+        
+        Optional<User> data = loadUserByIdOrNamespaceAndName(user);
+        data.ifPresent(u -> {
+            u.getState(fakeBus).ban();
+            userRepository.save(toUserJPA.apply(u));
+        });
+        
+        log.exit(data);
     }
 }

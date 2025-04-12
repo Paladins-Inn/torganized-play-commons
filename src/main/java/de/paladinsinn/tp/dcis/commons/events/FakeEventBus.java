@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025. Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) 2025. Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -15,28 +15,33 @@
  * License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
-package de.paladinsinn.tp.dcis.domain.users.services;
 
-import de.paladinsinn.tp.dcis.commons.events.LoggingEventBus;
-import org.springframework.context.annotation.Import;
+package de.paladinsinn.tp.dcis.commons.events;
 
-import java.lang.annotation.*;
+
+import com.google.common.eventbus.EventBus;
+import lombok.extern.slf4j.XSlf4j;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Service;
 
 
 /**
- * 
- * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
- * @version 1.0.0
- * @since 2024-09-27
+ * An event bus that won't send any events.
+ * It's a trap!
+ *
+ * @author klenkes74
+ * @since 12.04.25
  */
-@SuppressWarnings("unused")
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Documented
-@Import({
-        UserLogEntryClient.class,
-        UserLogEntrySender.class,
-        UserLoggedInStateRepository.class,
-        LoggingEventBus.class
- })
-public @interface EnableUserLogEntryClient {}
+@Service
+@Scope("singleton")
+@Order(1010)
+@XSlf4j
+public class FakeEventBus extends EventBus {
+  @Override
+  public void post(final @NotNull Object event) {
+    log.entry(event);
+    log.exit();
+  }
+}

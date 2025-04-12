@@ -18,13 +18,12 @@
 
 package de.paladinsinn.tp.dcis.domain.users.model;
 
-import java.io.Serializable;
-import java.util.UUID;
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import de.kaiserpfalzedv.commons.api.resources.HasId;
 import de.kaiserpfalzedv.commons.api.resources.HasTimestamps;
+
+import java.io.Serializable;
+import java.util.UUID;
 
 @JsonDeserialize(as = UserLogEntryImpl.class)
 public interface UserLogEntry extends HasId<UUID>, HasTimestamps, Serializable {
@@ -34,4 +33,19 @@ public interface UserLogEntry extends HasId<UUID>, HasTimestamps, Serializable {
     String getText();
     
     String getComment();
+    
+    default Object[] getI18nData() {
+        return new Object[] {
+            getCreated(),
+            getSystem(),
+            getUser().getId(),
+            getUser().getNameSpace(),
+            getUser().getName(),
+            getUser().getCreated(),
+            getUser().getModified(),
+            getUser().getDeleted(),
+            getUser().getDetainedTill(),
+            getUser().getDetainmentDuration()
+        };
+    }
 }

@@ -71,7 +71,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @EnableJpaRepositories(basePackages = {"de.paladinsinn.tp.dcis.domain.users"})
 @EntityScan(basePackages = {"de.paladinsinn.tp.dcis.domain.users"})
 @EnableEventBus
-@EnableUserLogEntryClient
+@EnableUserManagement
 @EnableKaiserpfalzCommonsSpringFormatters
 @Import({
     UserToImplImpl.class,
