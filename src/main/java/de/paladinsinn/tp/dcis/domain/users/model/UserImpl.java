@@ -18,20 +18,14 @@
 
 package de.paladinsinn.tp.dcis.domain.users.model;
 
-import java.time.*;
-import java.util.UUID;
-
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 import lombok.extern.slf4j.XSlf4j;
+
+import java.time.*;
+import java.util.UUID;
 
 @Jacksonized
 @Builder(toBuilder = true)
@@ -58,7 +52,7 @@ public class UserImpl implements User {
     private String name;
     
     @Override
-    public void detain(@Min(1) @Max(1095) long days) {
+    public UserImpl detain(@Min(1) @Max(1095) long days) {
         log.entry(days);
         
         detainmentDuration = Duration.ofDays(days);
@@ -68,52 +62,52 @@ public class UserImpl implements User {
             .plusDays(1 + days) // today end of day (1) + days
             .toOffsetDateTime();
         
-        log.exit(detainedTill);
+        return log.exit(this);
     }
     
     @Override
-    public void release() {
+    public UserImpl release() {
         log.entry();
         
         detainmentDuration = null;
         detainedTill = null;
         
-        log.exit();
+        return log.exit(this);
     }
     
     @Override
-    public void ban() {
+    public UserImpl ban() {
         log.entry();
         
         this.banned = true;
         
-        log.exit();
+        return log.exit(this);
     }
     
     @Override
-    public void unban() {
+    public UserImpl unban() {
         log.entry();
         
         this.banned = false;
         
-        log.exit();
+        return log.exit(this);
     }
     
     @Override
-    public void delete() {
+    public UserImpl delete() {
         log.entry();
         
         this.deleted = OffsetDateTime.now(Clock.systemUTC());
         
-        log.exit(deleted);
+        return log.exit(this);
     }
     
     @Override
-    public void undelete() {
+    public UserImpl undelete() {
         log.entry();
         
         this.deleted = null;
         
-        log.exit();
+        return log.exit(this);
     }
 }

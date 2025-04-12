@@ -98,7 +98,7 @@ public class UserLogEntryIT {
   @Autowired
   private Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
   
-  private static final String sinkName = "user-logs";
+  private static final String sinkName = "user-events";
   
   @Test
   public void shouldSendLoginWhenUserIsNotLoggedInYet() throws IOException {

@@ -18,9 +18,6 @@
 
 package de.paladinsinn.tp.dcis.domain.users.persistence;
 
-import java.time.*;
-import java.util.UUID;
-
 import de.kaiserpfalzedv.commons.jpa.AbstractRevisionedJPAEntity;
 import de.paladinsinn.tp.dcis.domain.users.model.User;
 import jakarta.annotation.Nullable;
@@ -33,6 +30,9 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import lombok.extern.slf4j.XSlf4j;
+
+import java.time.*;
+import java.util.UUID;
 
 /**
  * The player
@@ -85,7 +85,7 @@ public class UserJPA extends AbstractRevisionedJPAEntity<UUID> implements User {
     private String name;
     
     @Override
-    public void detain(@Min(1) @Max(1095) long days) {
+    public UserJPA detain(@Min(1) @Max(1095) long days) {
         log.entry(days);
         
         detainmentDuration = Duration.ofDays(days);
@@ -95,52 +95,52 @@ public class UserJPA extends AbstractRevisionedJPAEntity<UUID> implements User {
             .plusDays(1+ days) // today end of day (1) + days
             .toOffsetDateTime();
         
-        log.exit(detainedTill);
+        return log.exit(this);
     }
     
     @Override
-    public void release() {
+    public UserJPA release() {
         log.entry();
         
         detainmentDuration = null;
         detainedTill = null;
         
-        log.exit();
+        return log.exit(this);
     }
     
     @Override
-    public void ban() {
+    public UserJPA ban() {
         log.entry();
         
         this.banned = true;
         
-        log.exit();
+        return log.exit(this);
     }
     
     @Override
-    public void unban() {
+    public UserJPA unban() {
         log.entry();
         
         this.banned = false;
         
-        log.exit();
+        return log.exit(this);
     }
     
     @Override
-    public void delete() {
+    public UserJPA delete() {
         log.entry();
         
         this.deleted = OffsetDateTime.now(Clock.systemUTC());
         
-        log.exit();
+        return log.exit(this);
     }
     
     @Override
-    public void undelete() {
+    public UserJPA undelete() {
         log.entry();
         
         this.deleted = null;
         
-        log.exit();
+        return log.exit(this);
     }
 }

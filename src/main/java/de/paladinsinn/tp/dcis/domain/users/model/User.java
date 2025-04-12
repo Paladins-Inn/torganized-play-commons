@@ -18,12 +18,7 @@
 
 package de.paladinsinn.tp.dcis.domain.users.model;
 
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.util.UUID;
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import com.google.common.eventbus.EventBus;
 import de.kaiserpfalzedv.commons.api.resources.HasId;
 import de.kaiserpfalzedv.commons.api.resources.HasName;
@@ -32,6 +27,10 @@ import de.kaiserpfalzedv.commons.api.resources.HasTimestamps;
 import de.paladinsinn.tp.dcis.domain.users.model.state.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 /**
  * The user of the DCIS system.
@@ -52,33 +51,44 @@ public interface User extends HasId<UUID>, HasNameSpace, HasName, HasTimestamps 
    * Detains the user for a number of days.
    *
    * @param days The number of days the user is detained within the system.
+   * @return the user
    */
-  void detain(@Min(1) @Max(1095) long days);
+  User detain(@Min(1) @Max(1095) long days);
   
   /**
    * Release the user from detainment.
+   *
+   * @return the user
    */
-  void release();
+  User release();
   
   /**
    * Ban the user from the system.
+   *
+   * @return the user
    */
-  void ban();
+  User ban();
   
   /**
    * Unban the user from the system.
+   *
+   * @return the user
    */
-  void unban();
+  User unban();
   
   /**
    * delete the user.
+   *
+   * @return  the user
    */
-  void delete();
+  User delete();
   
   /**
    * undelete the user
+   *
+   * @return the user
    */
-  void undelete();
+  User undelete();
   
   /**
    * @return true if the user is banned from the system.
