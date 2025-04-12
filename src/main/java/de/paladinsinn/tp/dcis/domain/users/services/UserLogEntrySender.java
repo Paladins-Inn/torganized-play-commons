@@ -19,6 +19,7 @@ package de.paladinsinn.tp.dcis.domain.users.services;
 
 import de.paladinsinn.tp.dcis.domain.users.events.activity.UserLoginEvent;
 import de.paladinsinn.tp.dcis.domain.users.events.activity.UserLogoutEvent;
+import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.annotation.Timed;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -41,7 +42,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 @XSlf4j
 public class UserLogEntrySender {
-  private static final String sinkName = "user-logs";
+  private static final String sinkName = "user-events";
   
   @Value("${spring.application.name:unknown}")
   private String application;
@@ -67,6 +68,7 @@ public class UserLogEntrySender {
 
   
   @SuppressWarnings("unused") // It is used by the event bus
+  @Counted
   @Timed
   public void send(final UserLoginEvent event) {
     log.entry(streamBridge, event);
@@ -79,6 +81,7 @@ public class UserLogEntrySender {
   }
   
   @SuppressWarnings("unused") // It is used by the event bus
+  @Counted
   @Timed
   public void send(final UserLogoutEvent event) {
     log.entry(streamBridge, event);
