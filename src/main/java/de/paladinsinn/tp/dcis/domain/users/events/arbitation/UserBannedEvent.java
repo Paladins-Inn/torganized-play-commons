@@ -16,9 +16,10 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.domain.users.events;
+package de.paladinsinn.tp.dcis.domain.users.events.arbitation;
 
 
+import de.paladinsinn.tp.dcis.domain.users.events.UserBaseEvent;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -37,4 +38,6 @@ import lombok.extern.jackson.Jacksonized;
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class UserRemovedEvent extends UserBaseEvent {}
+public class UserBannedEvent extends UserBaseEvent {
+  private final String i18nKey = "user.banned";
+}

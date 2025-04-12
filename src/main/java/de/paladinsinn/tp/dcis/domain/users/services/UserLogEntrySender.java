@@ -17,8 +17,8 @@
  */
 package de.paladinsinn.tp.dcis.domain.users.services;
 
-import de.paladinsinn.tp.dcis.domain.users.events.UserLoginEvent;
-import de.paladinsinn.tp.dcis.domain.users.events.UserLogoutEvent;
+import de.paladinsinn.tp.dcis.domain.users.events.activity.UserLoginEvent;
+import de.paladinsinn.tp.dcis.domain.users.events.activity.UserLogoutEvent;
 import io.micrometer.core.annotation.Timed;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;

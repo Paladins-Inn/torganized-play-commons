@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025. Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) 2025. Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,25 +16,13 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.domain.users.events;
+package de.paladinsinn.tp.dcis.domain.users.model;
 
+import java.util.function.Function;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
-import lombok.extern.jackson.Jacksonized;
+import org.mapstruct.Mapper;
 
-
-/**
- * The event sent when a user gets temporary blocked.
- *
- * @author klenkes74
- * @since 09.11.24
- */
-@Jacksonized
-@SuperBuilder(toBuilder = true)
-@Getter
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
-public class UserBlockedEvent extends UserBaseEvent {}
+@Mapper
+public interface UserLogEntryToImpl extends Function<UserLogEntry, UserLogEntryImpl> {
+        UserLogEntryImpl apply(UserLogEntry orig);
+}

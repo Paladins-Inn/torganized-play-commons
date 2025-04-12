@@ -24,6 +24,8 @@ import de.paladinsinn.tp.dcis.commons.events.EnableEventBus;
 import de.paladinsinn.tp.dcis.commons.formatter.EnableKaiserpfalzCommonsSpringFormatters;
 import de.paladinsinn.tp.dcis.domain.users.model.User;
 import de.paladinsinn.tp.dcis.domain.users.model.UserImpl;
+import de.paladinsinn.tp.dcis.domain.users.model.UserToImplImpl;
+import de.paladinsinn.tp.dcis.domain.users.persistence.UserToJpaImpl;
 import lombok.extern.slf4j.XSlf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,8 +34,11 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAspectsAuto
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.stream.binder.test.EnableTestBinder;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -57,6 +62,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     MetricsAspectsAutoConfiguration.class,
     MetricsAutoConfiguration.class,
 })
+@Import({
+    UserToImplImpl.class,
+    UserToJpaImpl.class
+})
+@EnableJpaRepositories(basePackages = {"de.paladinsinn.tp.dcis.domain.users"})
+@EntityScan(basePackages = {"de.paladinsinn.tp.dcis.domain.users"})
 @XSlf4j
 public class UserLoggedinStateRepositoryTest {
   

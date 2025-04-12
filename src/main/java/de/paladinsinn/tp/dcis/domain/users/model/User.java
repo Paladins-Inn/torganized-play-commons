@@ -24,10 +24,14 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import com.google.common.eventbus.EventBus;
 import de.kaiserpfalzedv.commons.api.resources.HasId;
 import de.kaiserpfalzedv.commons.api.resources.HasName;
 import de.kaiserpfalzedv.commons.api.resources.HasNameSpace;
 import de.kaiserpfalzedv.commons.api.resources.HasTimestamps;
+import de.paladinsinn.tp.dcis.domain.users.model.state.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 /**
  * The user of the DCIS system.
@@ -49,7 +53,7 @@ public interface User extends HasId<UUID>, HasNameSpace, HasName, HasTimestamps 
    *
    * @param days The number of days the user is detained within the system.
    */
-  void detain(long days);
+  void detain(@Min(1) @Max(1095) long days);
   
   /**
    * Release the user from detainment.
@@ -100,5 +104,27 @@ public interface User extends HasId<UUID>, HasNameSpace, HasName, HasTimestamps 
    */
   default boolean isInactive() {
     return (isDeleted() || isBanned() || isDetained());
+  }
+  
+  /**
+   * Creates the user state from the user data itself.
+   *
+   * @param bus the event bus to be used during state changes.
+   * @return the current user state.
+   */
+  default UserState getState(EventBus bus) {
+    if (isDeleted()) {
+      return DeletedUser.builder().user(this).bus(bus).build();
+    }
+    
+    if (isBanned()) {
+      return BannedUser.builder().user(this).bus(bus).build();
+    }
+    
+    if (isDetained()) {
+      return DetainedUser.builder().user(this).bus(bus).build();
+    }
+    
+    return ActiveUser.builder().user(this).bus(bus).build();
   }
 }

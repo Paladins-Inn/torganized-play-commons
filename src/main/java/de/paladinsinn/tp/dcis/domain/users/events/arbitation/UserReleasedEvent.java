@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) 2024-2025. Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,28 +16,28 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.commons.events;
+package de.paladinsinn.tp.dcis.domain.users.events.arbitation;
 
 
-import lombok.*;
+import de.paladinsinn.tp.dcis.domain.users.events.UserBaseEvent;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.UUID;
 
+/**
+ * The event sent when a user gets temporary blocked.
+ *
+ * @author klenkes74
+ * @since 09.11.24
+ */
+@Jacksonized
 @SuperBuilder(toBuilder = true)
-@AllArgsConstructor
 @Getter
-@ToString
-@EqualsAndHashCode(of = {"id"})
-public abstract class DcisBaseEvent implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
-    @Builder.Default
-    private final UUID id = UUID.randomUUID();
-    
-    abstract public String getI18nKey();
-    abstract public Object[] getI18nData();
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class UserReleasedEvent extends UserBaseEvent {
+  private final String i18nKey = "user.released";
 }

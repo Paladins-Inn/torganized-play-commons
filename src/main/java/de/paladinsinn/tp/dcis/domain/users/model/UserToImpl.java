@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) 2025. Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,28 +16,13 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.commons.events;
+package de.paladinsinn.tp.dcis.domain.users.model;
 
+import java.util.function.Function;
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import org.mapstruct.Mapper;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.UUID;
-
-@SuperBuilder(toBuilder = true)
-@AllArgsConstructor
-@Getter
-@ToString
-@EqualsAndHashCode(of = {"id"})
-public abstract class DcisBaseEvent implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
-    @Builder.Default
-    private final UUID id = UUID.randomUUID();
-    
-    abstract public String getI18nKey();
-    abstract public Object[] getI18nData();
+@Mapper
+public interface UserToImpl extends Function<User, UserImpl> {
+    UserImpl apply(User orig);
 }

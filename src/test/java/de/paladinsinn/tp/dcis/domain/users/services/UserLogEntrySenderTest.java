@@ -20,21 +20,22 @@ package de.paladinsinn.tp.dcis.domain.users.services;
 
 
 import com.google.common.eventbus.EventBus;
-import de.paladinsinn.tp.dcis.domain.users.events.UserLoginEvent;
-import de.paladinsinn.tp.dcis.domain.users.events.UserLogoutEvent;
+import de.paladinsinn.tp.dcis.domain.users.events.activity.UserLoginEvent;
+import de.paladinsinn.tp.dcis.domain.users.events.activity.UserLogoutEvent;
 import de.paladinsinn.tp.dcis.domain.users.model.UserImpl;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import lombok.Getter;
+import de.paladinsinn.tp.dcis.domain.users.model.UserToImplImpl;
+import de.paladinsinn.tp.dcis.domain.users.persistence.UserToJpaImpl;
 import lombok.extern.slf4j.XSlf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAspectsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 
 /**
@@ -46,6 +47,16 @@ import org.springframework.context.annotation.Configuration;
  * @since 2025-03-23
  */
 @SpringBootTest
+@EnableAutoConfiguration(exclude = {
+    MetricsAspectsAutoConfiguration.class,
+    MetricsAutoConfiguration.class,
+})
+@Import({
+    UserToImplImpl.class,
+    UserToJpaImpl.class
+})
+@EnableJpaRepositories(basePackages = {"de.paladinsinn.tp.dcis.domain.users"})
+@EntityScan(basePackages = {"de.paladinsinn.tp.dcis.domain.users"})
 @XSlf4j
 public class UserLogEntrySenderTest {
   
@@ -92,28 +103,5 @@ public class UserLogEntrySenderTest {
         .name("Peter")
         .nameSpace("Paul")
         .build();
-  }
-  
-
-  @Configuration
-  static class TestConfiguration {
-    @MockBean
-    @Getter(onMethod = @__(@Bean))
-    private StreamBridge streamBridge;
-    
-    @Getter(onMethod = @__(@Bean))
-    private UserLogEntrySender sut;
-    
-
-    @PostConstruct
-    public void init() {
-      sut = new UserLogEntrySender(streamBridge);
-      sut.init();
-    }
-    
-    @PreDestroy
-    public void shutdown() {
-      sut.shutdown();
-    }
   }
 }

@@ -19,6 +19,8 @@
 package de.paladinsinn.tp.dcis.commons.events;
 
 
+import lombok.Getter;
+
 import java.util.UUID;
 
 
@@ -26,8 +28,15 @@ import java.util.UUID;
  * @author klenkes74
  * @since 24.11.24
  */
+@Getter
 public class TestEvent extends DcisBaseEvent {
+  private final String i18nKey = "event.test";
+  
   public TestEvent(final UUID id) {
     super(id);
+  }
+  
+  public Object[] getI18nData() {
+    return new Object[] {};
   }
 }

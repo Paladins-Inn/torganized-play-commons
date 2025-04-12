@@ -23,10 +23,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import de.paladinsinn.tp.dcis.commons.events.EnableEventBus;
 import de.paladinsinn.tp.dcis.commons.formatter.EnableKaiserpfalzCommonsSpringFormatters;
-import de.paladinsinn.tp.dcis.domain.users.events.UserLoginEvent;
-import de.paladinsinn.tp.dcis.domain.users.events.UserLogoutEvent;
+import de.paladinsinn.tp.dcis.domain.users.events.activity.UserLoginEvent;
+import de.paladinsinn.tp.dcis.domain.users.events.activity.UserLogoutEvent;
 import de.paladinsinn.tp.dcis.domain.users.model.User;
 import de.paladinsinn.tp.dcis.domain.users.model.UserImpl;
+import de.paladinsinn.tp.dcis.domain.users.model.UserToImplImpl;
+import de.paladinsinn.tp.dcis.domain.users.persistence.UserToJpaImpl;
 import lombok.extern.slf4j.XSlf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +36,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAspectsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.stream.binder.test.EnableTestBinder;
 import org.springframework.cloud.stream.binder.test.OutputDestination;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.messaging.Message;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
 
@@ -55,11 +60,22 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * @author klenkes74
  * @since 2025-03-23
  */
+@SuppressWarnings("LoggingSimilarMessage")
 @SpringBootTest
-@EnableUserLogEntryClient
+@ActiveProfiles({"test"})
 @EnableAutoConfiguration(exclude = {
     MetricsAspectsAutoConfiguration.class,
     MetricsAutoConfiguration.class,
+})
+@EnableTestBinder
+@EnableJpaRepositories(basePackages = {"de.paladinsinn.tp.dcis.domain.users"})
+@EntityScan(basePackages = {"de.paladinsinn.tp.dcis.domain.users"})
+@EnableEventBus
+@EnableUserLogEntryClient
+@EnableKaiserpfalzCommonsSpringFormatters
+@Import({
+    UserToImplImpl.class,
+    UserToJpaImpl.class
 })
 @XSlf4j
 public class UserLogEntryIT {
@@ -182,18 +198,4 @@ public class UserLogEntryIT {
     
     sut.init();
   }
-  
-  
-  @SpringBootApplication(
-      scanBasePackages = {
-        "de.paladinsinn.tp.dcis.commons.events",
-        "de.paladinsinn.tp.dcis.commons.formatter",
-        "de.paladinsinn.tp.dcis.domain.users.services"
-      }
-  )
-  @EnableTestBinder
-  @EnableEventBus
-  @EnableUserLogEntryClient
-  @EnableKaiserpfalzCommonsSpringFormatters
-  public static class Application {}
 }

@@ -49,4 +49,20 @@ public abstract class UserBaseEvent extends DcisBaseEvent {
   
   @ToString.Include
   final private User user;
+  
+  @Override
+  public  Object[] getI18nData() {
+    return new Object[] {
+        timestamp,
+        system,
+        user.getId(),
+        user.getNameSpace(),
+        user.getName(),
+        user.getCreated(),
+        user.getModified(),
+        user.getDeleted(),
+        user.getDetainedTill(),
+        user.getDetainmentDuration()
+    };
+  }
 }

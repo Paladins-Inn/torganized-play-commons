@@ -16,9 +16,10 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.paladinsinn.tp.dcis.domain.users.events;
+package de.paladinsinn.tp.dcis.domain.users.events.state;
 
 
+import de.paladinsinn.tp.dcis.domain.users.events.UserBaseEvent;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -27,7 +28,7 @@ import lombok.extern.jackson.Jacksonized;
 
 
 /**
- * The event sent when any user logs in.
+ * The event sent when a user gets removed from the system.
  *
  * @author klenkes74
  * @since 09.11.24
@@ -37,4 +38,6 @@ import lombok.extern.jackson.Jacksonized;
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class UserLoginEvent extends UserBaseEvent {}
+public class UserCreatedEvent extends UserBaseEvent {
+  private final String i18nKey = "user.created";
+}

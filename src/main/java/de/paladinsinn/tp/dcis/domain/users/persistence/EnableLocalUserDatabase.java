@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Kaiserpfalz EDV-Service, Roland T. Lichti
+ * Copyright (c) 2024-2025. Kaiserpfalz EDV-Service, Roland T. Lichti
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -15,29 +15,25 @@
  * License along with this program.
  * If not, see <https://www.gnu.org/licenses/>.
  */
+package de.paladinsinn.tp.dcis.domain.users.persistence;
 
-package de.paladinsinn.tp.dcis.commons.events;
+import org.springframework.context.annotation.Import;
+
+import java.lang.annotation.*;
 
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.UUID;
-
-@SuperBuilder(toBuilder = true)
-@AllArgsConstructor
-@Getter
-@ToString
-@EqualsAndHashCode(of = {"id"})
-public abstract class DcisBaseEvent implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
-    @Builder.Default
-    private final UUID id = UUID.randomUUID();
-    
-    abstract public String getI18nKey();
-    abstract public Object[] getI18nData();
-}
+/**
+ * 
+ * @author klenkes74 {@literal <rlichti@kaiserpfalz-edv.de>}
+ * @version 1.0.0
+ * @since 2024-09-27
+ */
+@SuppressWarnings("unused")
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Documented
+@Import({
+        UserRepository.class,
+        UserJPA.class
+ })
+public @interface EnableLocalUserDatabase {}

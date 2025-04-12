@@ -22,7 +22,6 @@ import de.paladinsinn.tp.dcis.commons.events.EnableEventBus;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -30,7 +29,6 @@ import org.springframework.context.annotation.Bean;
  * @version 1.0.0
  * @since 2024-06-09
  */
-@SpringBootApplication
 @EnableEventBus
 public class MessagingApplication extends SpringApplication {
     @Value("${spring.application.name:PLAYERS}")
